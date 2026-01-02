@@ -1,0 +1,36 @@
+# Node modules (all packages)
+node_modules/
+
+# Local env files
+.env
+/backend/.env
+/frontend/.env
+
+# Build outputs
+/dist
+/backend/dist
+/frontend/dist
+/.parcel-cache
+/.vite
+/build
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+*.suo
+*.user
+*.log
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Others
+coverage/
+*.local

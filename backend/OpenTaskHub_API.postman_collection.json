@@ -1,0 +1,461 @@
+{
+	"info": {
+		"_postman_id": "opentaskhub-api",
+		"name": "OpenTaskHub API",
+		"description": "Complete API collection for OpenTaskHub - Task Management System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"john_doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "register"]
+						},
+						"description": "Register a new user account"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set(\"user_id\", response.user.id);",
+									"    pm.environment.set(\"user_email\", response.user.email);",
+									"    pm.environment.set(\"user_role\", response.user.role || 'user');",
+									"}"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "login"]
+						},
+						"description": "Login and get authenticated user info (user.id, user.email, user.role)"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set(\"user_id\", response.user.id);",
+									"    pm.environment.set(\"user_email\", response.user.email);",
+									"    pm.environment.set(\"user_role\", response.user.role || 'user');",
+									"    if (response.user.role === 'admin') {",
+									"        pm.environment.set(\"admin_user_id\", response.user.id);",
+									"        pm.environment.set(\"admin_user_email\", response.user.email);",
+									"    }",
+									"}"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+							"header": [
+								{
+									"key": "x-user-id",
+									"value": "{{user_id}}"
+								},
+								{
+									"key": "x-user-email",
+									"value": "{{user_email}}"
+								},
+								{
+									"key": "x-user-role",
+									"value": "{{user_role}}"
+								}
+							],
+						"url": {
+							"raw": "{{base_url}}/auth/me",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "me"]
+						},
+						"description": "Get current authenticated user information"
+					}
+				}
+			]
+		},
+		{
+			"name": "Workspaces",
+			"item": [
+				{
+					"name": "Get All Workspaces",
+					"request": {
+						"method": "GET",
+							"header": [
+								{
+									"key": "x-user-id",
+									"value": "{{user_id}}"
+								},
+								{
+									"key": "x-user-email",
+									"value": "{{user_email}}"
+								}
+							],
+						"url": {
+							"raw": "{{base_url}}/workspaces",
+							"host": ["{{base_url}}"],
+							"path": ["workspaces"]
+						},
+						"description": "Get all workspaces (authenticated users)"
+					}
+				},
+				{
+					"name": "Get Workspace by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-user-id",
+								"value": "{{user_id}}"
+							},
+							{
+								"key": "x-user-email",
+								"value": "{{user_email}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/workspaces/{{workspace_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["workspaces", "{{workspace_id}}"]
+						},
+						"description": "Get workspace details by ID"
+					}
+				},
+				{
+					"name": "Create Workspace",
+					"request": {
+						"method": "POST",
+							"header": [
+								{
+									"key": "x-user-id",
+									"value": "{{admin_user_id}}"
+								},
+								{
+									"key": "x-user-email",
+									"value": "{{admin_user_email}}"
+								},
+								{
+									"key": "x-user-role",
+									"value": "admin"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"My Workspace\",\n  \"description\": \"Workspace description here\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/workspaces",
+							"host": ["{{base_url}}"],
+							"path": ["workspaces"]
+						},
+						"description": "Create a new workspace (Admin only)"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set(\"workspace_id\", response.workspace.id);",
+									"}"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Update Workspace",
+					"request": {
+						"method": "PUT",
+							"header": [
+								{
+									"key": "x-user-id",
+									"value": "{{admin_user_id}}"
+								},
+								{
+									"key": "x-user-email",
+									"value": "{{admin_user_email}}"
+								},
+								{
+									"key": "x-user-role",
+									"value": "admin"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Workspace Name\",\n  \"description\": \"Updated description\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/workspaces/{{workspace_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["workspaces", "{{workspace_id}}"]
+						},
+						"description": "Update workspace (Admin only)"
+					}
+				},
+				{
+					"name": "Delete Workspace",
+					"request": {
+						"method": "DELETE",
+							"header": [
+								{
+									"key": "x-user-id",
+									"value": "{{admin_user_id}}"
+								},
+								{
+									"key": "x-user-email",
+									"value": "{{admin_user_email}}"
+								},
+								{
+									"key": "x-user-role",
+									"value": "admin"
+								}
+							],
+						"url": {
+							"raw": "{{base_url}}/workspaces/{{workspace_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["workspaces", "{{workspace_id}}"]
+						},
+						"description": "Delete workspace (Admin only)"
+					}
+				}
+			]
+		},
+		{
+			"name": "Tasks",
+			"item": [
+				{
+					"name": "Get All Tasks in Workspace",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-user-id",
+								"value": "{{user_id}}"
+							},
+							{
+								"key": "x-user-email",
+								"value": "{{user_email}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tasks/workspace/{{workspace_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["tasks", "workspace", "{{workspace_id}}"]
+						},
+						"description": "Get all tasks in a specific workspace"
+					}
+				},
+				{
+					"name": "Get Tasks by Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-user-id",
+								"value": "{{user_id}}"
+							},
+							{
+								"key": "x-user-email",
+								"value": "{{user_email}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tasks/workspace/{{workspace_id}}/status/todo",
+							"host": ["{{base_url}}"],
+							"path": ["tasks", "workspace", "{{workspace_id}}", "status", "todo"]
+						},
+						"description": "Get tasks by status (todo, in_progress, done)"
+					}
+				},
+				{
+					"name": "Get Task by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-user-id",
+								"value": "{{user_id}}"
+							},
+							{
+								"key": "x-user-email",
+								"value": "{{user_email}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tasks/{{task_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["tasks", "{{task_id}}"]
+						},
+						"description": "Get task details by ID"
+					}
+				},
+				{
+					"name": "Create Task",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-user-id",
+								"value": "{{user_id}}"
+							},
+							{
+								"key": "x-user-email",
+								"value": "{{user_email}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Complete project documentation\",\n  \"description\": \"Write comprehensive API documentation\",\n  \"status\": \"todo\",\n  \"workspaceId\": \"{{workspace_id}}\",\n  \"assignedTo\": null\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tasks",
+							"host": ["{{base_url}}"],
+							"path": ["tasks"]
+						},
+						"description": "Create a new task in a workspace"
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set(\"task_id\", response.task.id);",
+									"}"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Update Task",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-user-id",
+								"value": "{{user_id}}"
+							},
+							{
+								"key": "x-user-email",
+								"value": "{{user_email}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"in_progress\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tasks/{{task_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["tasks", "{{task_id}}"]
+						},
+						"description": "Update task (title, description, status, assignedTo)"
+					}
+				},
+				{
+					"name": "Delete Task",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-user-id",
+								"value": "{{user_id}}"
+							},
+							{
+								"key": "x-user-email",
+								"value": "{{user_email}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/tasks/{{task_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["tasks", "{{task_id}}"]
+						},
+						"description": "Delete a task"
+					}
+				}
+			]
+		},
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/health",
+					"host": ["{{base_url}}"],
+					"path": ["health"]
+				},
+				"description": "Check if server is running"
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		}
+	]
+}

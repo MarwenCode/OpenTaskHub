@@ -1,0 +1,44 @@
+/* use Sass modules instead of deprecated @import */
+@use './reset' as *;
+@use './variables' as *;
+@use './mixins' as *;
+
+body{ font-family: Inter, Arial, sans-serif; background: $bg; color: $text-color }
+.app-shell{ min-height:100vh }
+
+/* default surface / card */
+.card{ background: $surface; border: 1px solid $border; border-radius: 8px; }
+
+/* shared input / button UI */
+.input{
+	width: 100%;
+	padding: 10px 12px;
+	border: 1px solid $border;
+	border-radius: 6px;
+	font-size: 0.95rem;
+	color: $text-color;
+	background: transparent;
+	box-sizing: border-box;
+}
+.input:focus{ outline: none; border-color: $primary-400; box-shadow: 0 0 0 4px rgba(37,99,235,0.06); }
+
+.btn{
+	width: 100%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 10px 14px;
+	border-radius: 8px;
+	border: none;
+	cursor: pointer;
+	background: $primary;
+	color: #fff;
+	font-weight: 600;
+	font-size: 0.98rem;
+}
+.btn:hover{ background: $primary-600 }
+
+.form-row{ display: flex; flex-direction: column; gap: 8px; }
+
+.helper-row{ display:flex; justify-content: space-between; align-items:center; gap:12px; }
+.link-muted{ color: $primary; font-weight:600; text-decoration:none }
