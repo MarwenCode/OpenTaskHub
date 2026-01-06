@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { loadUser, saveUser, clearUser } from '../lib/auth';
+import { loadUser, saveUser, clearUser } from '../../lib/auth';
 
 export default function useAuth(){
   const [user,setUser] = useState<any>(null);

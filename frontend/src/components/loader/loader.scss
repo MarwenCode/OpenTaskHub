@@ -1,0 +1,55 @@
+@use '../../styles/variables' as *;
+
+// Variables fallback if not in your variables file
+$primary-blue: #0095ff;
+$text-muted: #64748b;
+
+.loader-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed; // Fixed ensures it stays centered even if scrolling
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.9); // Semi-transparent white background
+  backdrop-filter: blur(4px); // Subtle blur effect for a premium feel
+  z-index: 1000;
+
+
+.loader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+
+  .loader-icon {
+    font-size: 3.5rem; // Larger icon
+    color: $primary-blue;
+    filter: drop-shadow(0 4px 6px rgba(0, 149, 255, 0.2));
+    animation: rotate-pinwheel 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  .loader-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: $text-muted;
+    letter-spacing: 0.5px;
+    // Optional: Subtle pulse effect for the text
+    animation: pulse-text 1.5s ease-in-out infinite;
+  }
+}
+
+}
+
+// Custom animations
+@keyframes rotate-pinwheel {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-text {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}

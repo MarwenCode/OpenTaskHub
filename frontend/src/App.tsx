@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import './App.css';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import Login from './features/auth/Login';
-import Register from './features/auth/Register';
-import WorkspaceList from './features/workspaces/WorkspaceList';
-import TaskList from './features/tasks/TaskList';
-import { ProtectedRoute } from './components/common/ProtectedRoute';
+import Login from './components/auth/Login';
+import Register from './components/auth/Register';
+import WorkspaceList from './components/workspaces/WorkspaceList';
+import TaskList from './components/tasks/TaskList';
+
 // import Header from './components/layout/Header';
 // import Sidebar from './components/layout/Sidebar';
 
@@ -21,9 +21,9 @@ function App() {
               <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/workspaces" element={<ProtectedRoute><WorkspaceList /></ProtectedRoute>} />
-                <Route path="/workspaces/:id/tasks" element={<ProtectedRoute><TaskList /></ProtectedRoute>} />
-                <Route path="/" element={<Navigate to="/workspaces" replace />} />
+                <Route path="/workspaces" element={<WorkspaceList />} />
+                <Route path="/workspaces/:id/tasks" element={<TaskList /> }/>
+                <Route path="/" element={<Navigate to="/" replace />} />
               </Routes>
             </main>
           </div>
