@@ -7,20 +7,21 @@ import workspaceRoutes from './routes/workspace.routes.js';
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true,
+}));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// Routes publiques (pas besoin d'authentification)
-app.use('/auth', authRoutes);
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/workspaces', workspaceRoutes);
+app.use('/api/tasks', taskRoutes);
 
-// Routes protégées (nécessitent l'authentification via le middleware)
-app.use('/workspaces', workspaceRoutes);
-app.use('/tasks', taskRoutes);
-
-// Health check route
-app.get('/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Server is running' });
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK' });
 });
+
 
 export default app;
