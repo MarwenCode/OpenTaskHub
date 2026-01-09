@@ -1,12 +1,21 @@
-import { Router } from 'express';
-import { register, login, createAdmin } from '../controllers/auth.controller.js';
 
-const router = Router();
+import express from 'express';
+import { login, register } from '../controllers/auth.controller.js';
 
-router.post('/register', register);
+const router = express.Router();
+
 router.post('/login', login);
 
-// TEMPORAIRE – création admin protégée par secret
-router.post('/create-admin', createAdmin);
+// Route pour utilisateur simple
+router.post('/register/user', (req, res, next) => {
+    req.userRoleToAssign = 'user';
+    next();
+}, register);
+
+// Route pour admin
+router.post('/register/admin', (req, res, next) => {
+    req.userRoleToAssign = 'admin';
+    next();
+}, register);
 
 export default router;

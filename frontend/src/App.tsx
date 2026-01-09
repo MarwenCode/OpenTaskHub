@@ -3,7 +3,7 @@ import './App.css';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
-import WorkspaceList from './components/workspaces/WorkspaceList';
+
 import TaskList from './components/tasks/TaskList';
 import Dashboard from './pages/Dashboard';
 
@@ -21,7 +21,7 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/workspaces" element={<WorkspaceList />} />
+       
             <Route path="/workspaces/:id/tasks" element={<TaskList /> }/>
             <Route path="/" element={<Dashboard/>} />
           </Routes>

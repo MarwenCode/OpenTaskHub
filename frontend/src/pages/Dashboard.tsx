@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   FaHome, FaBell, FaCog, FaUser, FaPlus, 
   FaSearch, FaEllipsisH, FaArrowRight 
 } from 'react-icons/fa';
 import './dashboard.scss';
+import { useSelector, useDispatch } from 'react-redux';
+
+import WorkSpaceForm from '../components/workspaceForm/WorkSpaceForm';
 
 // Mock data pour les cartes
 const workspaces = [
@@ -42,6 +45,14 @@ const workspaces = [
 ];
 
 const Dashboard: React.FC = () => {
+const dispatch = useDispatch();
+ const user = useSelector((state: any) => state.auth.user);
+
+
+console.log('User from Redux:', user);
+
+
+
   return (
     <div className="dashboard-layout">
       {/* SIDEBAR */}
@@ -72,7 +83,7 @@ const Dashboard: React.FC = () => {
       <main className="main-content">
         <header className="main-header">
           <div className="header-left">
-            <h1>Welcome back, Alex</h1>
+            <h1>Welcome back, {user.username}</h1>
             <p>Here are your active workspaces</p>
           </div>
           <button className="create-workspace-btn">
@@ -122,6 +133,8 @@ const Dashboard: React.FC = () => {
           {/* ADD NEW WORKSPACE SLOT */}
           <div className="workspace-card add-new">
             <div className="add-content">
+             
+            
               <div className="plus-circle">
                 <FaPlus />
               </div>
@@ -129,6 +142,8 @@ const Dashboard: React.FC = () => {
               <p>Create a new space for your team</p>
             </div>
           </div>
+              <>  <WorkSpaceForm /> </>
+       
         </div>
       </main>
     </div>
