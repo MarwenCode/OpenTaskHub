@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom'; // Ajout de useLocation
 
 // Icônes
 import { FcGoogle } from 'react-icons/fc';
 import { FaGithub, FaEye, FaEyeSlash, FaArrowRight, FaEnvelope } from 'react-icons/fa';
-
 
 // Redux & Types
 import { useAppDispatch, useAppSelector } from '../../redux/store'
@@ -28,6 +27,11 @@ const Register: React.FC = () => {
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const location = useLocation(); // Pour lire l'URL actuelle
+
+  // LOGIQUE DYNAMIQUE : On détecte le rôle via l'URL
+  // Si l'URL contient "admin", on passe 'admin', sinon 'user'
+  const role: 'admin' | 'user' = location.pathname.includes('admin') ? 'admin' : 'user';
 
   const { isLoading, isError, isSuccess, message } = useAppSelector((state) => state.auth);
 
@@ -37,11 +41,15 @@ const Register: React.FC = () => {
   }, [isSuccess, navigate, dispatch]);
 
   const handleSubmit = (e: React.FormEvent) => {
-  e.preventDefault();
-  if (email && password && username) {
-    dispatch(register({ username, email, password })); 
-  }
-};
+    e.preventDefault();
+    if (email && password && username) {
+      // On envoie l'objet structuré { userData, role } au Slice
+      dispatch(register({ 
+        userData: { username, email, password }, 
+        role: role 
+      })); 
+    }
+  };
 
   return (
     <div className="auth-page">
@@ -55,11 +63,11 @@ const Register: React.FC = () => {
               <img src={loginLogo} alt="Logo" className="auth-logo" />
               <span>OpenTaskHub</span>
             </div>
-            <h1>Welcome back</h1>
-            <p>Please enter your details to access your tasks.</p>
+            {/* Titre dynamique selon le rôle détecté */}
+            <h1>{role === 'admin' ? 'Admin Registration' : 'Create Account'}</h1>
+            <p>Please enter your details to {role === 'admin' ? 'setup admin access' : 'access your tasks'}.</p>
           </header>
 
-        
           <div className="social-login">
             <button type="button" className="social-btn">
               <FcGoogle size={20} /> Google
@@ -89,6 +97,7 @@ const Register: React.FC = () => {
                 <FaEnvelope className="field-icon" />
               </div>
             </div>
+
             <div className="input-group">
               <label>Username</label>
               <div className="input-wrapper">
@@ -99,7 +108,6 @@ const Register: React.FC = () => {
                   onChange={(e) => setUsername(e.target.value)}
                   required
                 />
-                
               </div>
             </div>
 
@@ -135,7 +143,7 @@ const Register: React.FC = () => {
 
             <Button type="submit" disabled={isLoading} className="submit-btn">
               {isLoading ? 'Loading...' : (
-                <>Register</>
+                <>{role === 'admin' ? 'Register as Admin' : 'Register'}</>
               )}
             </Button>
           </form>
@@ -146,14 +154,13 @@ const Register: React.FC = () => {
         </div>
       </div>
 
-      {/* SECTION DROITE : HERO / ILLUSTRATION */}
+      {/* SECTION DROITE : HERO */}
       <div className="auth-hero-side">
         <div className="hero-content">
           <div className="illustration-wrapper">
-             {/* Ici l'image qui ressemble à ton template */}
              <img src={dashboardImg} alt="App Preview" className="hero-image" />
           </div>
-          <h2>Manage projects effortlessly.</h2>
+          <h2>{role === 'admin' ? 'Control your workspace.' : 'Manage projects effortlessly.'}</h2>
           <p>Collaborate in real-time and streamline your team's workflow with OpenTaskHub.</p>
         </div>
       </div>

@@ -3,13 +3,12 @@ import axios from 'axios';
 
 const API_URL = `${import.meta.env.VITE_API_URL}/auth`;
 
-
 interface User {
   id: string;
   username: string;
   email: string;
+  role: string; // Ajouté pour savoir si c'est un admin ou user
   token?: string;
-  // Add other user properties here
 }
 
 export interface AuthState {
@@ -20,7 +19,6 @@ export interface AuthState {
   message: string;
 }
 
-// Get user from localStorage
 const user = JSON.parse(localStorage.getItem('user') || 'null');
 
 const initialState: AuthState = {
@@ -31,53 +29,44 @@ const initialState: AuthState = {
   message: '',
 };
 
+// --- ACTIONS ASYNCHRONES ---
 
-// Register user
+// Register : on attend un objet { data: ..., role: 'admin' | 'user' }
 export const register = createAsyncThunk(
   'auth/register',
-  async (user: any, thunkAPI) => {
+  async ({ userData, role }: { userData: any; role: 'admin' | 'user' }, thunkAPI) => {
     try {
-      const response = await axios.post(`${API_URL}/register`, user);
+      // On utilise le role pour taper sur la bonne URL : /register/admin ou /register/user
+      const response = await axios.post(`${API_URL}/register/${role}`, userData);
       if (response.data) {
         localStorage.setItem('user', JSON.stringify(response.data));
       }
       return response.data;
     } catch (error: any) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
+      const message = error.response?.data?.message || error.message || error.toString();
       return thunkAPI.rejectWithValue(message);
     }
   }
 );
 
-// Login user
+// Login : on attend aussi l'identifiant du portail (role)
 export const login = createAsyncThunk(
   'auth/login',
-  async (userData: any, thunkAPI) => {
+  async ({ userData, role }: { userData: any; role: 'admin' | 'user' }, thunkAPI) => {
     try {
-      // If userData is already a user object (from Google callback), use it directly
       if (userData.token) {
         localStorage.setItem('user', JSON.stringify(userData));
         return userData;
       }
-      
-      // Otherwise, make API call for email/password login
-      const response = await axios.post(`${API_URL}/login`, userData);
+
+      // On tape sur /login/admin ou /login/user
+      const response = await axios.post(`${API_URL}/login/${role}`, userData);
       if (response.data) {
         localStorage.setItem('user', JSON.stringify(response.data));
       }
       return response.data;
     } catch (error: any) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
+      const message = error.response?.data?.message || error.message || error.toString();
       return thunkAPI.rejectWithValue(message);
     }
   }
@@ -87,6 +76,7 @@ export const logout = createAsyncThunk('auth/logout', async () => {
   localStorage.removeItem('user');
 });
 
+// Le reste du slice (reducers/extraReducers) reste identique car la logique d'état ne change pas
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -100,10 +90,7 @@ export const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-    //Register cases
-      .addCase(register.pending, (state) => {
-        state.isLoading = true;
-      })
+      .addCase(register.pending, (state) => { state.isLoading = true; })
       .addCase(register.fulfilled, (state, action: PayloadAction<User>) => {
         state.isLoading = false;
         state.isSuccess = true;
@@ -113,12 +100,8 @@ export const authSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload as string;
-        state.user = null;
       })
-      //Login cases
-      .addCase(login.pending, (state) => {
-        state.isLoading = true;
-      })
+      .addCase(login.pending, (state) => { state.isLoading = true; })
       .addCase(login.fulfilled, (state, action: PayloadAction<User>) => {
         state.isLoading = false;
         state.isSuccess = true;
@@ -128,7 +111,6 @@ export const authSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload as string;
-        state.user = null;
       })
       .addCase(logout.fulfilled, (state) => {
         state.user = null;

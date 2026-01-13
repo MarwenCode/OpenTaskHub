@@ -8,6 +8,7 @@ import TaskList from './components/tasks/TaskList';
 import Dashboard from './pages/Dashboard';
 
 
+
 // import Header from './components/layout/Header';
 // import Sidebar from './components/layout/Sidebar';
 
@@ -21,6 +22,7 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/admin/register" element={<Register />} />
        
             <Route path="/workspaces/:id/tasks" element={<TaskList /> }/>
             <Route path="/" element={<Dashboard/>} />

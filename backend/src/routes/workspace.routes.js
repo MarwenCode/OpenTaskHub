@@ -2,10 +2,10 @@ import { Router } from 'express';
 
 import {
   getAllWorkspaces,
-  getWorkspaceById,
+  // getWorkspaceById,
   createWorkspace,
-  updateWorkspace,
-  deleteWorkspace,
+  // updateWorkspace,
+  // deleteWorkspace,
 } from '../controllers/workspace.controller.js';
 import { isAdmin } from '../middelwares/admin.middleware.js';
 import { authenticate } from '../middelwares/auth.middleware.js';
