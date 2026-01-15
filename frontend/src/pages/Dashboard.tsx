@@ -4,7 +4,7 @@ import {
   FaSearch, FaEllipsisH, FaArrowRight 
 } from 'react-icons/fa';
 import './dashboard.scss';
-import { useSelector, useDispatch } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../redux/store';
 
 import WorkSpaceForm from '../components/workspaceForm/WorkSpaceForm';
 
@@ -45,8 +45,8 @@ const workspaces = [
 ];
 
 const Dashboard: React.FC = () => {
-const dispatch = useDispatch();
- const user = useSelector((state: any) => state.auth.user);
+ const user = useAppSelector((state: any) => state.auth.user.user);
+ const [showWorkspaceForm, setShowWorkspaceForm] = useState(false);
 
 
 console.log('User from Redux:', user);
@@ -83,10 +83,10 @@ console.log('User from Redux:', user);
       <main className="main-content">
         <header className="main-header">
           <div className="header-left">
-            <h1>Welcome back, {user.username}</h1>
+            <h1>Welcome back, {user?.username}</h1>
             <p>Here are your active workspaces</p>
           </div>
-          <button className="create-workspace-btn">
+          <button className="create-workspace-btn" onClick={() => setShowWorkspaceForm(true)}>
             Create Workspace <FaPlus />
           </button>
         </header>
@@ -131,7 +131,7 @@ console.log('User from Redux:', user);
           ))}
 
           {/* ADD NEW WORKSPACE SLOT */}
-          <div className="workspace-card add-new">
+          <div className="workspace-card add-new" onClick={() => setShowWorkspaceForm(true)}>
             <div className="add-content">
              
             
@@ -142,7 +142,7 @@ console.log('User from Redux:', user);
               <p>Create a new space for your team</p>
             </div>
           </div>
-              {/* <>  <WorkSpaceForm /> </> */}
+              {showWorkspaceForm && <WorkSpaceForm onClose={() => setShowWorkspaceForm(false)} />}
        
         </div>
       </main>

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import './App.css';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAppSelector } from './redux/store';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
+import Navbar from './components/navbar/Navbar';
 
 import TaskList from './components/tasks/TaskList';
 import Dashboard from './pages/Dashboard';
@@ -13,17 +15,18 @@ import Dashboard from './pages/Dashboard';
 // import Sidebar from './components/layout/Sidebar';
 
 function App() {
-  
+  const { user } = useAppSelector((state) => state.auth);
 
  return (
     <div className="app-shell">
+      {user && <Navbar />}
       <div className="main-area">
         <main>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/admin/register" element={<Register />} />
-       
+
             <Route path="/workspaces/:id/tasks" element={<TaskList /> }/>
             <Route path="/" element={<Dashboard/>} />
           </Routes>
