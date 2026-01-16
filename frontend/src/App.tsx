@@ -26,6 +26,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/admin/register" element={<Register />} />
+            <Route path="/admin/login" element={<Login />} />
 
             <Route path="/workspaces/:id/tasks" element={<TaskList /> }/>
             <Route path="/" element={<Dashboard/>} />

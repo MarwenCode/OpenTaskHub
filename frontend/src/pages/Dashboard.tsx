@@ -87,7 +87,12 @@ console.log('User from Redux:', user);
             <p>Here are your active workspaces</p>
           </div>
           <button className="create-workspace-btn" onClick={() => setShowWorkspaceForm(true)}>
-            Create Workspace <FaPlus />
+            {user?.role === 'admin' ? <span> Create Workspace <FaPlus /></span> : null}
+              
+            
+             
+            
+          
           </button>
         </header>
 
