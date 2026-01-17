@@ -2,10 +2,14 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux';
 import authReducer from './authSlice/authSlice';
+import workspaceReducer from './worksapceSlice/workSpaceSlice';
+
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    workspace: workspaceReducer,
+    
   },
 });
 

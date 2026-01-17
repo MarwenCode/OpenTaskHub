@@ -70,15 +70,12 @@ const closeModal = () => {
           <div className="input-row">
             <div className="input-group">
               <label>Category</label>
-              <select 
+              <input 
+                type="text"
+                placeholder="e.g. Engineering"
                 value={formData.category}
                 onChange={(e) => setFormData({...formData, category: e.target.value})}
-              >
-                <option value="engineering">Engineering</option>
-                <option value="marketing">Marketing</option>
-                <option value="design">Design</option>
-                <option value="finance">Finance</option>
-              </select>
+              />
             </div>
             <div className="input-group">
               <label>Visibility</label>
