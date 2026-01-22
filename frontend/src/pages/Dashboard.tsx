@@ -9,40 +9,40 @@ import { useAppDispatch, useAppSelector } from '../redux/store';
 import WorkSpaceForm from '../components/workspaceForm/WorkSpaceForm';
 
 // Mock data pour les cartes
-const workspaces = [
-  {
-    id: 1,
-    title: 'Marketing Team',
-    description: 'Campaigns management, social media content calendar, and quarterly...',
-    projects: 8,
-    image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=400&q=80',
-    members: ['https://i.pravatar.cc/150?u=1', 'https://i.pravatar.cc/150?u=2', 'https://i.pravatar.cc/150?u=3']
-  },
-  {
-    id: 2,
-    title: 'Engineering',
-    description: 'Sprint tracking, bug fixes, and infrastructure maintenance tasks.',
-    projects: 12,
-    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=400&q=80',
-    members: ['https://i.pravatar.cc/150?u=4', 'https://i.pravatar.cc/150?u=5']
-  },
-  {
-    id: 3,
-    title: 'Design System',
-    description: 'UI kit components, documentation, and brand asset management.',
-    projects: 3,
-    image: 'https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&w=400&q=80',
-    members: ['https://i.pravatar.cc/150?u=6']
-  },
-  {
-    id: 4,
-    title: 'Finance',
-    description: 'Q4 Budget planning and payroll management.',
-    projects: 2,
-    image: 'https://images.unsplash.com/photo-1454165833767-027ffea9e77b?auto=format&fit=crop&w=400&q=80',
-    members: ['https://i.pravatar.cc/150?u=7']
-  }
-];
+// const workspaces = [
+//   {
+//     id: 1,
+//     title: 'Marketing Team',
+//     description: 'Campaigns management, social media content calendar, and quarterly...',
+//     projects: 8,
+//     image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=400&q=80',
+//     members: ['https://i.pravatar.cc/150?u=1', 'https://i.pravatar.cc/150?u=2', 'https://i.pravatar.cc/150?u=3']
+//   },
+//   {
+//     id: 2,
+//     title: 'Engineering',
+//     description: 'Sprint tracking, bug fixes, and infrastructure maintenance tasks.',
+//     projects: 12,
+//     image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=400&q=80',
+//     members: ['https://i.pravatar.cc/150?u=4', 'https://i.pravatar.cc/150?u=5']
+//   },
+//   {
+//     id: 3,
+//     title: 'Design System',
+//     description: 'UI kit components, documentation, and brand asset management.',
+//     projects: 3,
+//     image: 'https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&w=400&q=80',
+//     members: ['https://i.pravatar.cc/150?u=6']
+//   },
+//   {
+//     id: 4,
+//     title: 'Finance',
+//     description: 'Q4 Budget planning and payroll management.',
+//     projects: 2,
+//     image: 'https://images.unsplash.com/photo-1454165833767-027ffea9e77b?auto=format&fit=crop&w=400&q=80',
+//     members: ['https://i.pravatar.cc/150?u=7']
+//   }
+// ];
 
 const Dashboard: React.FC = () => {
  const user = useAppSelector((state: any) => state.auth.user.user);
@@ -109,7 +109,7 @@ console.log('User from Redux:', user);
         </div>
 
         <div className="workspaces-grid">
-          {workspaces.map((ws) => (
+          {/* {workspaces.map((ws) => (
             <div className="workspace-card" key={ws.id}>
               <div className="card-image" style={{ backgroundImage: `url(${ws.image})` }}>
                 <span className="project-badge">{ws.projects} Active Projects</span>
@@ -133,7 +133,7 @@ console.log('User from Redux:', user);
                 </div>
               </div>
             </div>
-          ))}
+          ))} */}
 
           {/* ADD NEW WORKSPACE SLOT */}
           <div className="workspace-card add-new" onClick={() => setShowWorkspaceForm(true)}>

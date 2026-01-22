@@ -7,7 +7,7 @@ const API_URL = `${import.meta.env.VITE_API_URL}/workspaces`;
 
 export interface WorkSpace {
   id: string;
-  title: string;    
+  name: string;    
   description: string;
   category: string;
   visibility: string;
@@ -49,18 +49,65 @@ export const fetchWorkspaces = createAsyncThunk(
 );
 
 
+// export const createWorkspace = createAsyncThunk(
+//   'workspaces/create',
+//   async (workspaceData: Partial<WorkSpace>, thunkAPI) => {
+//     try {
+     
+//       const userStr = localStorage.getItem('user');
+//       const user = userStr ? JSON.parse(userStr) : null;
+//       const token = user?.token; // Le token est DANS l'objet user
+      
+//       console.log('Token:', token);
+      
+//       if (!token) {
+//         return thunkAPI.rejectWithValue('No token found - please login');
+//       }
+      
+//       const response = await axios.post(API_URL, workspaceData, {
+//         headers: { 
+//           Authorization: `Bearer ${token}` 
+//         }
+//       });
+      
+//       return response.data;
+//     } catch (error: any) {    
+//       const message = error.response?.data?.error || error.message;
+//       return thunkAPI.rejectWithValue(message);
+//     }
+//   }
+// )
+
+
 export const createWorkspace = createAsyncThunk(
   'workspaces/create',
   async (workspaceData: Partial<WorkSpace>, thunkAPI) => {
     try {
-      const response = await axios.post(API_URL, workspaceData);
+      // ✅ Récupérer depuis Redux state
+      const state = thunkAPI.getState() as any; // ou RootState
+      const token = state.auth.user?.token;
+      
+      console.log('Token from Redux:', token);
+      
+      if (!token) {
+        return thunkAPI.rejectWithValue('No token found - please login');
+      }
+      
+      const response = await axios.post(API_URL, workspaceData, {
+        headers: { 
+          Authorization: `Bearer ${token}` 
+        }
+      });
+      
       return response.data;
     } catch (error: any) {    
-      const message = error.response?.data?.message || error.message || error.toString();
+      const message = error.response?.data?.error || error.message;
       return thunkAPI.rejectWithValue(message);
     }
   }
 )
+
+
 
 
 
@@ -96,7 +143,7 @@ export const workspaceSlice = createSlice({
       .addCase(createWorkspace.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.workspaces.push(action.payload);
+        state.workspaces.push(action.payload.workspace);
       })
       .addCase(createWorkspace.rejected, (state, action) => {
         state.isLoading = false;

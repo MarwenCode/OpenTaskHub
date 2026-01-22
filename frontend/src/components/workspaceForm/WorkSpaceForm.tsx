@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { FaUpload, FaTimes, FaBriefcase, FaUsers, FaPalette } from 'react-icons/fa';
 import './workspaceForm.scss';
+import { useAppDispatch } from '../../redux/store';
+import { createWorkspace } from '../../redux/worksapceSlice/workSpaceSlice';
 
 
 
@@ -9,13 +11,21 @@ interface WorkspaceFormProps {
 }
 
 const WorkspaceForm: React.FC<WorkspaceFormProps> = ({ onClose }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    category: '',
-    visibility: 'private',
-    photo: null
-  });
+  const dispatch = useAppDispatch();
+  
+ const [formData, setFormData] = useState({
+  name: '',
+  description: '',
+  category: '',
+  visibility: 'private',
+  imageUrl: '' 
+});
+
+
+  //create a worksspace function to handle form submission
+
+
+
 
  const resetFormData = () => {
   console.log("Resetting form data");
@@ -35,6 +45,27 @@ const closeModal = () => {
   onClose();
 };
 
+const createFormWorkspace = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  // Validation
+  if (!formData.name || !formData.category) {
+    console.log("Please fill in all required fields");
+    return;
+  }
+
+  try {
+    
+    const result = await dispatch(createWorkspace(formData)).unwrap();
+    
+    console.log("Workspace created successfully", result);
+    resetFormData(); // Fermer le modal après succès
+    
+  } catch (error) {
+    console.error("Failed to create workspace:", error);
+    // Afficher un message d'erreur à l'utilisateur
+  }
+};
   
 
   return (
@@ -118,7 +149,7 @@ const closeModal = () => {
 
           <footer className="modal-footer">
             <button type="button" className="btn-cancel" onClick={closeModal}>Cancel</button>
-            <button type="submit" className="btn-submit">Create Workspace</button>
+            <button type="submit" className="btn-submit" onClick={createFormWorkspace}  >Create Workspace</button>
           </footer>
         </form>
       </div>

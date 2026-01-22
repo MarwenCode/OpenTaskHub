@@ -5,21 +5,15 @@ import { db } from '../config/db.js';
 
 export const createWorkspace = async (req, res) => {
   try {
-    // 1. Extraction de TOUS les champs du corps de la requête
     const { name, description, category, visibility, imageUrl } = req.body;
-    const userId = req.userId; // Middleware d'auth requis
-    const userRole = req.userRole;
+    const userId = req.userId;
+    
 
-    // 2. Vérifications de sécurité et de validité
-    if (userRole !== 'admin') {
-      return res.status(403).json({ error: 'Seul un administrateur peut créer un espace.' });
-    }
 
     if (!name) {
       return res.status(400).json({ error: 'Le nom du workspace est obligatoire.' });
     }
 
-    // 3. Insertion avec les nouveaux champs
     const result = await db.query(
       `INSERT INTO workspaces 
         (name, description, category, visibility, image_url, created_by, created_at, updated_at)
