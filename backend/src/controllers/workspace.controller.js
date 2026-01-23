@@ -47,7 +47,7 @@ export const getAllWorkspaces = async (req, res) => {
        FROM workspaces 
        ORDER BY created_at DESC`
     );
-    res.status(200).json({ workspaces: result.rows });
+    res.status(200).json(result.rows);
   } catch (error) {
     res.status(500).json({ error: 'Erreur lors de la récupération' });
   }

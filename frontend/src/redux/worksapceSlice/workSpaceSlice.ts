@@ -39,7 +39,21 @@ export const fetchWorkspaces = createAsyncThunk(
   'workspaces/fetchAll',
   async (_, thunkAPI) => {
     try {
-      const response = await axios.get(API_URL);
+      
+      const state = thunkAPI.getState() as any;
+      const token = state.auth.user?.token;
+      
+      if (!token) {
+        return thunkAPI.rejectWithValue('No token found - please login');
+      }
+      
+      
+      const response = await axios.get(API_URL, {
+        headers: { 
+          Authorization: `Bearer ${token}` 
+        }
+      });
+      
       return response.data;
     } catch (error: any) {
       const message = error.response?.data?.message || error.message || error.toString();
@@ -49,42 +63,13 @@ export const fetchWorkspaces = createAsyncThunk(
 );
 
 
-// export const createWorkspace = createAsyncThunk(
-//   'workspaces/create',
-//   async (workspaceData: Partial<WorkSpace>, thunkAPI) => {
-//     try {
-     
-//       const userStr = localStorage.getItem('user');
-//       const user = userStr ? JSON.parse(userStr) : null;
-//       const token = user?.token; // Le token est DANS l'objet user
-      
-//       console.log('Token:', token);
-      
-//       if (!token) {
-//         return thunkAPI.rejectWithValue('No token found - please login');
-//       }
-      
-//       const response = await axios.post(API_URL, workspaceData, {
-//         headers: { 
-//           Authorization: `Bearer ${token}` 
-//         }
-//       });
-      
-//       return response.data;
-//     } catch (error: any) {    
-//       const message = error.response?.data?.error || error.message;
-//       return thunkAPI.rejectWithValue(message);
-//     }
-//   }
-// )
-
 
 export const createWorkspace = createAsyncThunk(
   'workspaces/create',
   async (workspaceData: Partial<WorkSpace>, thunkAPI) => {
     try {
-      // ✅ Récupérer depuis Redux state
-      const state = thunkAPI.getState() as any; // ou RootState
+     
+      const state = thunkAPI.getState() as any;
       const token = state.auth.user?.token;
       
       console.log('Token from Redux:', token);
