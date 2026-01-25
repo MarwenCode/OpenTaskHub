@@ -7,7 +7,8 @@ import Register from './components/auth/Register';
 import Navbar from './components/navbar/Navbar';
 
 import TaskList from './components/tasks/TaskList';
-import Dashboard from './pages/Dashboard';
+import Dashboard from './pages/dashboard/Dashboard';
+import SingleWorkspace from './pages/singleworkspace/SingleWorkSpace';
 
 
 
@@ -30,6 +31,8 @@ function App() {
 
             <Route path="/workspaces/:id/tasks" element={<TaskList /> }/>
             <Route path="/" element={<Dashboard/>} />
+            <Route path="/workspace/:id" element={<SingleWorkspace />} />
+            <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </main>
       </div>

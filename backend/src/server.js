@@ -1,6 +1,7 @@
 import app from './app.js';
 import { db } from './config/db.js';
 import dotenv from 'dotenv';
+import { createTables } from './setupDatabase.js';
 
 dotenv.config();
 
@@ -21,4 +22,5 @@ async function testDatabaseConnection() {
 app.listen(PORT, async () => {
   console.log(`Server is running on http://localhost:${PORT}`);
   await testDatabaseConnection();
+  await createTables();
 });

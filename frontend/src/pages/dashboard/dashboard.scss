@@ -1,0 +1,141 @@
+$primary: #0ea5e9;
+$bg-body: #ffffff;
+$bg-sidebar: #f8fafc;
+$text-main: #0f172a;
+$text-muted: #64748b;
+$border-color: #e2e8f0;
+
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+
+  .sidebar {
+    width: 260px;
+    background: $bg-sidebar;
+    border-right: 1px solid $border-color;
+    padding: 2rem;
+    position: fixed;
+    height: 100vh;
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 3rem;
+      .logo-box { width: 32px; height: 32px; background: $primary; border-radius: 8px; }
+      .brand-name { font-weight: 800; font-size: 1.2rem; color: $text-main; }
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        border: none;
+        background: none;
+        color: $text-muted;
+        font-weight: 600;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: 0.3s;
+        &.active, &:hover { background: #f1f5f9; color: $primary; }
+      }
+    }
+  }
+
+  .main-content {
+    margin-left: 260px;
+    flex: 1;
+    padding: 3rem 4rem;
+
+    .main-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2.5rem;
+      h1 { font-size: 2rem; color: $text-main; }
+      p { color: $text-muted; }
+    }
+
+    .btn-primary {
+      background: $primary;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba($primary, 0.2);
+    }
+
+    .workspaces-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+
+      .workspace-card {
+        background: white;
+        border-radius: 20px;
+        border: 1px solid $border-color;
+        overflow: hidden;
+        cursor: pointer;
+        transition: 0.3s;
+
+        &:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+
+        .card-image {
+          height: 160px;
+          background-size: cover;
+          position: relative;
+          padding: 1rem;
+          .badge {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+          }
+        }
+
+        .card-body {
+          padding: 1.5rem;
+          h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+          p { color: $text-muted; font-size: 0.9rem; margin-bottom: 1.5rem; line-height: 1.5; }
+        }
+
+        .card-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-top: 1rem;
+          border-top: 1px solid #f1f5f9;
+          .avatars {
+            display: flex;
+            align-items: center;
+            img { width: 28px; height: 28px; border-radius: 50%; border: 2px solid white; margin-right: -10px; }
+            span { margin-left: 15px; font-size: 0.8rem; color: $text-muted; }
+          }
+          .enter-link { background: none; border: none; color: $primary; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        }
+
+        &.add-new {
+          border: 2px dashed $border-color;
+          background: #fafafa;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          .plus-icon { width: 40px; height: 40px; border-radius: 50%; border: 1px solid $border-color; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; color: $text-muted; }
+          p { font-weight: 600; color: $text-muted; }
+        }
+      }
+    }
+  }
+}
