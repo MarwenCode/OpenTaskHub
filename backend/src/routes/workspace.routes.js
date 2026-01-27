@@ -6,6 +6,7 @@ import {
   createWorkspace,
   // updateWorkspace,
   // deleteWorkspace,
+  getWorkspaceMembers
 } from '../controllers/workspace.controller.js';
 import { isAdmin } from '../middelwares/admin.middleware.js';
 import { authenticate } from '../middelwares/auth.middleware.js';
@@ -19,6 +20,8 @@ router.get('/', authenticate, getAllWorkspaces);
 
 // ADMIN ONLY
 router.post('/', authenticate, isAdmin, createWorkspace);
+// Get workspace members
+router.get('/:workspaceId/members', authenticate, getWorkspaceMembers);
 // router.put('/:id', authenticate, isAdmin, updateWorkspace);
 // router.delete('/:id', authenticate, isAdmin, deleteWorkspace);
 

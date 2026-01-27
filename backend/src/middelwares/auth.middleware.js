@@ -13,8 +13,8 @@ export const authenticate = (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
-    // ✅ CHANGEZ decoded.userId en decoded.id
-    req.userId = decoded.id;  // Correction ici
+   
+    req.userId = decoded.id;  
     req.userRole = decoded.role;
     
     console.log('✅ userId:', req.userId);  // Pour vérifier

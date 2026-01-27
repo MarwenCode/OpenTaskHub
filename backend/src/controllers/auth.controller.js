@@ -36,9 +36,10 @@ export const login = async (req, res) => {
     const user = result.rows[0];
 
     // SÉCURITÉ : On vérifie si le rôle en base correspond à l'URL de connexion
-    if (user.role !== expectedRole) {
-      return res.status(403).json({ error: `Veuillez utiliser le portail ${user.role} pour vous connecter.` });
-    }
+    // Modification: Allow login regardless of route (Unified Login)
+    // if (user.role !== expectedRole) {
+    //   return res.status(403).json({ error: `Veuillez utiliser le portail ${user.role} pour vous connecter.` });
+    // }
 
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(401).json({ error: 'Invalide' });

@@ -46,7 +46,7 @@ export const getTaskById = async (req, res) => {
 export const createTask = async (req, res) => {
   try {
     const { title, description, status, workspaceId, assignedTo } = req.body;
-    const userId = req.user.id; // from JWT middleware
+    const userId = req.userId; // from JWT middleware
 
     if (!title || !workspaceId) {
       return res.status(400).json({
@@ -75,6 +75,13 @@ export const createTask = async (req, res) => {
     });
   } catch (error) {
     console.error('Create task error:', error);
+    // Handle specific Postgres errors
+    if (error.code === '23503') {
+      return res.status(400).json({ error: 'Invalid workspace ID or user ID (Foreign Key Violation).' });
+    }
+    if (error.code === '22P02') {
+      return res.status(400).json({ error: 'Invalid UUID format.' });
+    }
     res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -178,7 +185,9 @@ export const addComment = async (req, res) => {
   try {
     const { id } = req.params; // Task ID
     const { text } = req.body;
-    const userId = req.user.id;
+    const userId = req.userId; // Fixed: req.user is undefined, use req.userId from middleware
+    //add username
+    const username = req.username;
 
     if (!text) {
       return res.status(400).json({ error: 'Comment text is required' });
@@ -188,7 +197,7 @@ export const addComment = async (req, res) => {
       `INSERT INTO comments (task_id, user_id, text, created_at)
        VALUES ($1, $2, $3, NOW())
        RETURNING id, task_id, user_id, text, created_at`,
-      [id, userId, text]
+      [id, userId, username, text]
     );
 
     res.status(201).json({

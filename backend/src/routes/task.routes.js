@@ -6,28 +6,24 @@ import {
   updateTask,
   deleteTask,
   getTasksByStatus,
+  addComment,
+  getTaskComments,
 } from '../controllers/task.controller.js';
+
+
+
+import { authenticate } from '../middelwares/auth.middleware.js';
 
 const router = Router();
 
-// All task routes require authentication
-
-// Get all tasks in a workspace
-router.get('/workspace/:workspaceId', getTasksByWorkspace);
-
-// Get tasks by status in a workspace (todo, in_progress, done)
-router.get('/workspace/:workspaceId/status/:status', getTasksByStatus);
-
-// Get task by ID
-router.get('/:id', getTaskById);
-
-// Create task
-router.post('/', createTask);
-
-// Update task
-router.put('/:id', updateTask);
-
-// Delete task
-router.delete('/:id', deleteTask);
+// 🔐 PROTECTED ROUTES
+router.get('/workspace/:workspaceId', authenticate, getTasksByWorkspace);
+router.get('/workspace/:workspaceId/status/:status', authenticate, getTasksByStatus);
+router.get('/:id', authenticate, getTaskById);
+router.post('/', authenticate, createTask);
+router.put('/:id', authenticate, updateTask);
+router.delete('/:id', authenticate, deleteTask);
+router.post('/:id/comments', authenticate, addComment);
+router.get('/:id/comments', authenticate, getTaskComments);
 
 export default router;
