@@ -7,17 +7,28 @@ import TicketForm from "../../components/ticketForm/TicketForm";
 import TaskDetailModal from "../../components/taskDetailModal/TaskDetailModal";
 import "./singleworkspace.scss";
 
-const SingleWorkspace: React.FC = () => {
+interface SingleWorkspaceProps {
+  showTicketForm?: boolean;
+  onCloseTicketForm?: () => void;
+}
+
+const SingleWorkspace: React.FC<SingleWorkspaceProps> = ({ 
+  showTicketForm: externalShowTicketForm = false, 
+  onCloseTicketForm 
+}) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch<any>();
 
-  const [showTicketForm, setShowTicketForm] = useState(false);
+  const [internalShowTicketForm, setInternalShowTicketForm] = useState(false);
   const [initialTaskStatus, setInitialTaskStatus] = useState("todo");
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [draggedTask, setDraggedTask] = useState<Task | null>(null);
 
   const tasks = useSelector((state: any) => state.task.tasks);
+
+  // Combiner les deux états (externe et interne) pour showTicketForm
+  const showTicketForm = externalShowTicketForm || internalShowTicketForm;
 
   useEffect(() => {
     if (id) {
@@ -25,13 +36,26 @@ const SingleWorkspace: React.FC = () => {
     }
   }, [id, dispatch]);
 
+  // Ouvrir le form depuis le Navbar (externe)
+  useEffect(() => {
+    if (externalShowTicketForm) {
+      setInitialTaskStatus("todo");
+    }
+  }, [externalShowTicketForm]);
+
   const handleAddTask = (status: string = "todo") => {
     setInitialTaskStatus(status);
-    setShowTicketForm(true);
+    setInternalShowTicketForm(true);
+  };
+
+  const handleCloseTicketForm = () => {
+    setInternalShowTicketForm(false);
+    if (onCloseTicketForm) {
+      onCloseTicketForm();
+    }
   };
 
   const handleTaskClick = (task: Task) => {
-    // N'ouvre le modal que si on n'est pas en train de drag
     if (!draggedTask) {
       setSelectedTask(task);
     }
@@ -42,24 +66,18 @@ const SingleWorkspace: React.FC = () => {
   };
 
   const handleTaskUpdated = () => {
-    // Refresh tasks after update
     if (id) {
       dispatch(fetchTasksByWorkspace(id));
     }
   };
 
   const handleTaskDeleted = () => {
-    // Refresh tasks after deletion
     if (id) {
       dispatch(fetchTasksByWorkspace(id));
     }
   };
-  const handleDragEnter = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
 
   const handleDragStart = (task: Task) => {
-    console.log("🟢 DRAG START:", task.title);
     setDraggedTask(task);
   };
 
@@ -68,131 +86,142 @@ const SingleWorkspace: React.FC = () => {
   };
 
   const handleDrop = (newStatus: string) => {
-  console.log("🔴 DROP dans:", newStatus);
-  
-  if (draggedTask && draggedTask.status !== newStatus) {
-    console.log(`✅ Task ${draggedTask.title} moved from ${draggedTask.status} to ${newStatus}`);
-    
-    // Appel de l'API pour mettre à jour le statut
-    dispatch(updateTask({
-      id: draggedTask.id,
-      data: { status: newStatus }
-    }));
-  }
-  
-  setDraggedTask(null);
-};
+    if (draggedTask && draggedTask.status !== newStatus) {
+      dispatch(
+        updateTask({
+          id: draggedTask.id,
+          data: { status: newStatus },
+        })
+      );
+    }
+    setDraggedTask(null);
+  };
 
   const columns = [
-    { id: "todo", title: "To Do", status: "todo" },
-    { id: "in_progress", title: "In Progress", status: "in_progress" },
-    { id: "done", title: "Done", status: "done" },
+    { 
+      id: "todo", 
+      title: "To Do", 
+      status: "todo",
+      color: "#94a3b8",
+      bgColor: "#f8fafc"
+    },
+    { 
+      id: "in_progress", 
+      title: "In Progress", 
+      status: "in_progress",
+      color: "#0ea5e9",
+      bgColor: "#eff6ff"
+    },
+    { 
+      id: "done", 
+      title: "Done", 
+      status: "done",
+      color: "#10b981",
+      bgColor: "#f0fdf4"
+    },
   ];
 
   return (
-    <div className="single-ws-layout">
-      <header className="ws-header">
+    <div className="workspace-layout">
+      <header className="workspace-header">
         <div className="header-left">
-          <button className="back-btn" onClick={() => navigate("/dashboard")}>
+          <button className="back-button" onClick={() => navigate("/")}>
             <FaArrowLeft />
           </button>
-          <div>
-            <h1>Development Team</h1>
-            <p>Workspace ID: {id}</p>
+          <div className="header-info">
+            <div className="breadcrumb">
+              <span className="breadcrumb-item">Acme Workspace</span>
+              <span className="breadcrumb-separator">›</span>
+              <span className="breadcrumb-item active">Projects</span>
+            </div>
+            <h1>Project Dashboard</h1>
+            <p>Manage your ongoing initiatives and check tasks status.</p>
           </div>
-        </div>
-        <div className="header-actions">
-          <div className="avatars">
-            <img src="https://i.pravatar.cc/100?u=4" alt="user" />
-            <button className="add-member">
-              <FaPlus />
-            </button>
-          </div>
-          <button className="btn-primary" onClick={() => handleAddTask("todo")}>
-            <FaPlus /> New Task
-          </button>
         </div>
       </header>
 
       <div className="kanban-board">
         {columns.map((col) => {
           const colTasks = tasks.filter(
-            (task: any) => task.status === col.status,
+            (task: any) => task.status === col.status
           );
+          
           return (
-            <div key={col.id} className="kanban-column">
+            <div 
+              key={col.id} 
+              className="kanban-column"
+              style={{ 
+                backgroundColor: col.bgColor,
+                borderLeft: `3px solid ${col.color}`
+              }}
+            >
               <div className="column-header">
-                <h3>
-                  {col.title} <span className="count">{colTasks.length}</span>
-                </h3>
-                <FaEllipsisH />
+                <div className="header-title">
+                  <span 
+                    className="status-dot" 
+                    style={{ backgroundColor: col.color }}
+                  />
+                  <h3>{col.title}</h3>
+                  <span className="task-count" style={{ color: col.color }}>
+                    {colTasks.length}
+                  </span>
+                </div>
+                <button className="column-menu">
+                  <FaEllipsisH />
+                </button>
               </div>
+
+              <button
+                className="add-task-btn"
+                onClick={() => handleAddTask(col.status)}
+              >
+                <FaPlus /> Add Task
+              </button>
+
               <div
-                className="task-list"
+                className="tasks-container"
                 onDragOver={handleDragOver}
                 onDrop={() => handleDrop(col.status)}
-                style={{ minHeight: "100px" }}>
+              >
                 {colTasks.map((task: any) => (
                   <div
-                    className="task-list"
-                    onDragOver={(e) => {
-                      e.preventDefault();
-                      console.log("🟡 OVER sur colonne:", col.status);
-                    }}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      console.log(
-                        "🔴🔴🔴 DROP DIRECT sur colonne:",
-                        col.status,
-                      );
-                      if (draggedTask) {
-                        console.log(
-                          "Task:",
-                          draggedTask.title,
-                          "→",
-                          col.status,
-                        );
-                      }
-                      setDraggedTask(null);
-                    }}
-                    style={{ minHeight: "200px", border: "2px dashed red" }}>
-                    {colTasks.map((task: any) => (
-                      <div
-                        key={task.id}
-                        className="task-card"
-                        onClick={() => handleTaskClick(task)}
-                        draggable={true}
-                        onDragStart={() => {
-                          console.log("🟢 START:", task.title);
-                          setDraggedTask(task);
-                        }}
-                        style={{ cursor: "grab" }}>
-                        <h4>{task.title}</h4>
-                        <p>{task.description}</p>
-                        <div className="task-meta">
-                          <span className="date">
-                            <FaClock />{" "}
-                            {new Date(task.created_at).toLocaleDateString()}
-                          </span>
-                          <img
-                            src="https://i.pravatar.cc/100?u=1"
-                            alt="assignee"
-                          />
-                        </div>
+                    key={task.id}
+                    className="task-card"
+                    onClick={() => handleTaskClick(task)}
+                    draggable={true}
+                    onDragStart={() => handleDragStart(task)}
+                  >
+                    <div className="task-header">
+                      <span className="task-badge" style={{ 
+                        backgroundColor: `${col.color}15`,
+                        color: col.color 
+                      }}>
+                        {task.category || col.title}
+                      </span>
+                    </div>
+                    <h4 className="task-title">{task.title}</h4>
+                    <p className="task-description">{task.description}</p>
+                    <div className="task-footer">
+                      <div className="task-meta">
+                        <img
+                          src="https://i.pravatar.cc/100?u=1"
+                          alt="assignee"
+                          className="task-avatar"
+                        />
+                        <span className="task-date">
+                          <FaClock />
+                          {task.created_at 
+                            ? new Date(task.created_at).toLocaleDateString('en-US', { 
+                                month: 'short', 
+                                day: 'numeric' 
+                              })
+                            : 'Today'
+                          }
+                        </span>
                       </div>
-                    ))}
-                    <button
-                      className="add-task-inline"
-                      onClick={() => handleAddTask(col.status)}>
-                      <FaPlus /> Add Task
-                    </button>
+                    </div>
                   </div>
                 ))}
-                <button
-                  className="add-task-inline"
-                  onClick={() => handleAddTask(col.status)}>
-                  <FaPlus /> Add Task
-                </button>
               </div>
             </div>
           );
@@ -201,7 +230,7 @@ const SingleWorkspace: React.FC = () => {
 
       {showTicketForm && (
         <TicketForm
-          onClose={() => setShowTicketForm(false)}
+          onClose={handleCloseTicketForm}
           workspaceId={id!}
           initialStatus={initialTaskStatus}
         />

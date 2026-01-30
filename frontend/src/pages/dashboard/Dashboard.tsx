@@ -1,103 +1,125 @@
-import React, { useState, useEffect } from "react";
-import {
-  FaHome,
-  FaBell,
-  FaCog,
-  FaUser,
-  FaPlus,
-  FaSearch,
-  FaEllipsisH,
-  FaArrowRight,
-} from "react-icons/fa";
+import React, { useEffect } from "react";
+import { FaEllipsisH, FaArrowRight, FaPlus } from "react-icons/fa";
 import "./dashboard.scss";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
-import {fetchWorkspaces} from "../../redux/worksapceSlice/workSpaceSlice";
+import { fetchWorkspaces } from "../../redux/worksapceSlice/workSpaceSlice";
 import { useNavigate } from "react-router-dom";
 import WorkSpaceForm from "../../components/workspaceForm/WorkSpaceForm";
 
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1553877522-43269d4ea984";
 
-const Dashboard: React.FC = () => {
+interface DashboardProps {
+  showWorkspaceForm?: boolean;
+  onCloseWorkspaceForm?: () => void;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ 
+  showWorkspaceForm = false, 
+  onCloseWorkspaceForm 
+}) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const user = useAppSelector((state: any) => state.auth.user.user);
   const { workspaces, isLoading } = useAppSelector((state) => state.workspace);
-  const [showWorkspaceForm, setShowWorkspaceForm] = useState(false);
 
   useEffect(() => {
     dispatch(fetchWorkspaces());
   }, [dispatch]);
 
+  const handleCloseForm = () => {
+    if (onCloseWorkspaceForm) {
+      onCloseWorkspaceForm();
+    }
+  };
+
   return (
-    <div className="dashboard-layout">
-      <aside className="sidebar">
-        <div className="sidebar-brand">
-          <div className="logo-box"></div>
-          <span className="brand-name">OpenTaskHub</span>
-        </div>
-        <nav className="sidebar-nav">
-          <button className="nav-item active"><FaHome /> Workspaces</button>
-          <button className="nav-item"><FaBell /> Activity</button>
-          <button className="nav-item"><FaCog /> Settings</button>
-        </nav>
-      </aside>
-
-      <main className="main-content">
-        <header className="main-header">
-          <div>
-            <h1>Welcome back, {user?.username}</h1>
-            <p>Manage your workspaces and team projects</p>
+    <div className="dashboard-container">
+      <header className="dashboard-header">
+        <div className="header-content">
+          <div className="breadcrumb">
+            <span className="breadcrumb-item">Acme Workspace</span>
+            <span className="breadcrumb-separator">›</span>
+            <span className="breadcrumb-item active">Projects</span>
           </div>
-          {user?.role === "admin" && (
-            <button className="btn-primary" onClick={() => setShowWorkspaceForm(true)}>
-              <FaPlus /> Create Workspace
-            </button>
-          )}
-        </header>
-
-        <div className="filter-bar">
-          <div className="search-wrapper">
-            <FaSearch />
-            <input type="text" placeholder="Search workspaces..." />
+          <div className="header-title">
+            <h1>Project Dashboard</h1>
+            <p>Manage your ongoing initiatives and check tasks status.</p>
           </div>
         </div>
+      </header>
 
-        <div className="workspaces-grid">
+      <div className="filter-section">
+        <div className="filter-buttons">
+          <button className="filter-btn active">All Projects</button>
+          <button className="filter-btn">Active</button>
+          <button className="filter-btn">Archived</button>
+        </div>
+      </div>
+
+      {isLoading ? (
+        <div className="loading-state">Loading workspaces...</div>
+      ) : (
+        <div className="projects-grid">
           {workspaces?.map((ws) => (
-            <div key={ws.id} className="workspace-card" onClick={() => navigate(`/workspace/${ws.id}`)}>
-              <div className="card-image" style={{ backgroundImage: `url(${ws.imageUrl || DEFAULT_IMAGE})` }}>
-                <span className="badge">{ws.category}</span>
+            <div
+              key={ws.id}
+              className="project-card"
+              onClick={() => navigate(`/workspace/${ws.id}`)}
+            >
+              <div
+                className="card-image"
+                style={{
+                  backgroundImage: `url(${ws.imageUrl || DEFAULT_IMAGE})`,
+                }}
+              >
+                <span className="project-badge">{ws.category || "General"}</span>
               </div>
-              <div className="card-body">
-                <div className="card-title">
+              <div className="card-content">
+                <div className="card-header">
                   <h3>{ws.name}</h3>
-                  <FaEllipsisH />
+                  <button className="card-menu" onClick={(e) => e.stopPropagation()}>
+                    <FaEllipsisH />
+                  </button>
                 </div>
-                <p>{ws.description}</p>
+                <p className="card-description">{ws.description}</p>
                 <div className="card-footer">
-                  <div className="avatars">
-                    <img src="https://i.pravatar.cc/100?u=1" alt="user" />
-                    <img src="https://i.pravatar.cc/100?u=2" alt="user" />
-                    <span>+3</span>
+                  <div className="members-avatars">
+                    <img src="https://i.pravatar.cc/100?u=1" alt="member" />
+                    <img src="https://i.pravatar.cc/100?u=2" alt="member" />
+                    <img src="https://i.pravatar.cc/100?u=3" alt="member" />
+                    <span className="members-count">+3</span>
                   </div>
-                  <button className="enter-link">Enter <FaArrowRight /></button>
+                  <button className="enter-btn" onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/workspace/${ws.id}`);
+                  }}>
+                    Enter <FaArrowRight />
+                  </button>
                 </div>
               </div>
             </div>
           ))}
 
           {user?.role === "admin" && (
-            <div className="workspace-card add-new" onClick={() => setShowWorkspaceForm(true)}>
+            <div
+              className="project-card add-card"
+              onClick={onCloseWorkspaceForm}
+            >
               <div className="add-content">
-                <div className="plus-icon"><FaPlus /></div>
-                <p>Add Workspace</p>
+                <div className="plus-circle">
+                  <FaPlus />
+                </div>
+                <h3>Add Workspace</h3>
+                <p>Create a new workspace to organize your projects</p>
               </div>
             </div>
           )}
         </div>
+      )}
 
-        {showWorkspaceForm && <WorkSpaceForm onClose={() => setShowWorkspaceForm(false)} />}
-      </main>
+      {showWorkspaceForm && (
+        <WorkSpaceForm onClose={handleCloseForm} />
+      )}
     </div>
   );
 };

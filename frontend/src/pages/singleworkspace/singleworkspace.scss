@@ -1,291 +1,372 @@
-$bg-board: #f4f7f9;
+// Couleurs
+$primary-blue: #0ea5e9;
+$primary-green: #10b981;
+$status-todo: #94a3b8;
+$status-progress: #0ea5e9;
+$status-done: #10b981;
+$bg-main: #ffffff;
+$bg-card: #ffffff;
+$text-primary: #0f172a;
+$text-secondary: #64748b;
+$text-muted: #94a3b8;
+$border-color: #e2e8f0;
 
-.single-ws-layout {
-  padding: 2rem 4rem;
-  background: white;
+.workspace-layout {
+  padding: 2rem 3rem;
+  background: $bg-main;
   min-height: 100vh;
 
-  .ws-header {
+  // Header
+  .workspace-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 3rem;
+    align-items: flex-start;
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid $border-color;
 
     .header-left {
       display: flex;
-      align-items: center;
       gap: 20px;
-      .back-btn { background: none; border: 1px solid #e2e8f0; padding: 10px; border-radius: 10px; cursor: pointer; }
-      h1 { font-size: 1.8rem; }
+      align-items: flex-start;
+
+      .back-button {
+        width: 40px;
+        height: 40px;
+        background: white;
+        border: 1px solid $border-color;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: $text-secondary;
+        transition: all 0.2s;
+        flex-shrink: 0;
+
+        &:hover {
+          background: #f8fafc;
+          color: $text-primary;
+          border-color: $text-secondary;
+        }
+      }
+
+      .header-info {
+        .breadcrumb {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 12px;
+          font-size: 13px;
+
+          .breadcrumb-item {
+            color: $text-muted;
+            transition: color 0.2s;
+
+            &.active {
+              color: $text-primary;
+              font-weight: 500;
+            }
+
+            &:not(.active):hover {
+              color: $text-secondary;
+              cursor: pointer;
+            }
+          }
+
+          .breadcrumb-separator {
+            color: $text-muted;
+          }
+        }
+
+        h1 {
+          font-size: 2rem;
+          font-weight: 700;
+          color: $text-primary;
+          margin-bottom: 8px;
+          letter-spacing: -0.5px;
+        }
+
+        p {
+          color: $text-secondary;
+          font-size: 15px;
+        }
+      }
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+
+      .btn-secondary {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: white;
+        border: 1px solid $border-color;
+        border-radius: 10px;
+        color: $text-primary;
+        font-weight: 500;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: #f8fafc;
+          border-color: $text-muted;
+        }
+      }
+
+      .btn-primary {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 24px;
+        background: $primary-blue;
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba($primary-blue, 0.2);
+
+        &:hover {
+          background: darken($primary-blue, 5%);
+          box-shadow: 0 4px 12px rgba($primary-blue, 0.3);
+          transform: translateY(-1px);
+        }
+      }
     }
   }
 
+  // Kanban Board
   .kanban-board {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
+    gap: 24px;
     align-items: flex-start;
 
     .kanban-column {
-      background: $bg-board;
-      border-radius: 16px;
-      padding: 1.5rem;
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 20px;
       min-height: 500px;
+      transition: all 0.2s;
 
       .column-header {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 1.5rem;
-        h3 { font-size: 1rem; font-weight: 700; .count { color: #94a3b8; margin-left: 8px; font-weight: 400; } }
-      }
+        align-items: center;
+        margin-bottom: 16px;
 
-      .task-card {
-        background: white;
-        padding: 1.2rem;
-        border-radius: 12px;
-        margin-bottom: 1rem;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-        h4 { font-size: 0.95rem; margin-bottom: 0.5rem; }
-        p { color: #64748b; font-size: 0.85rem; margin-bottom: 1rem; }
-        
-        .task-meta {
+        .header-title {
           display: flex;
-          justify-content: space-between;
           align-items: center;
-          .date { font-size: 0.75rem; color: #94a3b8; display: flex; align-items: center; gap: 4px; }
-          img { width: 24px; height: 24px; border-radius: 50%; }
+          gap: 10px;
+
+          .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+          }
+
+          h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: $text-primary;
+          }
+
+          .task-count {
+            font-size: 14px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: white;
+          }
+        }
+
+        .column-menu {
+          background: none;
+          border: none;
+          color: $text-muted;
+          cursor: pointer;
+          padding: 6px;
+          border-radius: 6px;
+          transition: all 0.2s;
+
+          &:hover {
+            background: white;
+            color: $text-primary;
+          }
         }
       }
 
-      .add-task-inline {
+      .add-task-btn {
         width: 100%;
-        padding: 10px;
-        border: 1px dashed #cbd5e1;
-        background: none;
-        border-radius: 8px;
-        color: #64748b;
-        cursor: pointer;
-        &:hover { background: rgba(255,255,255,0.5); }
-      }
-    }
-  }
-
-
-  // Ajoutez ces styles à votre singleworkspace.scss existant
-
-/* Tags dans les task cards */
-.task-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 8px 0;
-
-  .tag {
-    background: #f1f5f9;
-    color: #475569;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 500;
-    border: 1px solid #e2e8f0;
-  }
-}
-
-/* Modal styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  padding: 32px;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-
-  h2 {
-    margin: 0 0 24px 0;
-    font-size: 20px;
-    font-weight: 600;
-    color: #1e293b;
-  }
-
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-
-    input[type="text"],
-    textarea,
-    select {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      font-size: 14px;
-      font-family: inherit;
-      transition: border-color 0.2s;
-
-      &:focus {
-        outline: none;
-        border-color: #3b82f6;
-      }
-    }
-
-    textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-  }
-
-  .modal-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 8px;
-
-    button {
-      flex: 1;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-
-      &:first-child {
+        padding: 12px;
         background: white;
-        border: 1px solid #e2e8f0;
-        color: #64748b;
-
-        &:hover {
-          background: #f8fafc;
-        }
-      }
-
-      &.btn-primary {
-        background: #3b82f6;
-        border: none;
-        color: white;
-
-        &:hover {
-          background: #2563eb;
-        }
-      }
-    }
-  }
-}
-
-/* Tags Input Section */
-.tags-input-section {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-
-  .tags-input-wrapper {
-    display: flex;
-    gap: 8px;
-
-    input {
-      flex: 1;
-    }
-
-    button {
-      padding: 12px 16px;
-      background: #f1f5f9;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 500;
-      color: #475569;
-      cursor: pointer;
-      transition: all 0.2s;
-
-      &:hover {
-        background: #e2e8f0;
-      }
-    }
-  }
-
-  .tags-display {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-
-    .tag-item {
-      background: #eff6ff;
-      color: #2563eb;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-
-      button {
-        background: none;
-        border: none;
-        color: #2563eb;
-        font-size: 18px;
-        line-height: 1;
+        border: 2px dashed $border-color;
+        border-radius: 10px;
+        color: $text-secondary;
+        font-weight: 500;
+        font-size: 14px;
         cursor: pointer;
-        padding: 0;
-        width: 18px;
-        height: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 50%;
+        gap: 8px;
+        margin-bottom: 16px;
         transition: all 0.2s;
 
         &:hover {
-          background: #2563eb;
-          color: white;
+          background: #f8fafc;
+          border-color: $text-secondary;
+          color: $text-primary;
+        }
+      }
+
+      .tasks-container {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-height: 200px;
+
+        .task-card {
+          background: white;
+          padding: 16px;
+          border-radius: 12px;
+          border: 1px solid $border-color;
+          cursor: pointer;
+          transition: all 0.2s;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            border-color: darken($border-color, 5%);
+          }
+
+          &:active {
+            cursor: grabbing;
+          }
+
+          .task-header {
+            margin-bottom: 12px;
+
+            .task-badge {
+              display: inline-block;
+              padding: 4px 10px;
+              border-radius: 6px;
+              font-size: 11px;
+              font-weight: 600;
+              text-transform: uppercase;
+              letter-spacing: 0.3px;
+            }
+          }
+
+          .task-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: $text-primary;
+            margin-bottom: 8px;
+            line-height: 1.4;
+          }
+
+          .task-description {
+            font-size: 13px;
+            color: $text-secondary;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+          }
+
+          .task-footer {
+            .task-meta {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+
+              .task-avatar {
+                width: 28px;
+                height: 28px;
+                border-radius: 50%;
+                border: 2px solid white;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+              }
+
+              .task-date {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 12px;
+                color: $text-muted;
+
+                svg {
+                  font-size: 11px;
+                }
+              }
+            }
+          }
         }
       }
     }
   }
 }
 
-/* Amélioration du loading state */
-.loading-state {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-  font-size: 16px;
-  color: #64748b;
-}
+// Responsive
+@media (max-width: 1200px) {
+  .workspace-layout {
+    .kanban-board {
+      grid-template-columns: repeat(2, 1fr);
 
-/* Amélioration des avatars dans task-meta */
-.task-meta {
-  .assignees {
-    display: flex;
-    gap: -8px;
-
-    img {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      border: 2px solid white;
-      margin-left: -8px;
-
-      &:first-child {
-        margin-left: 0;
+      .kanban-column:last-child {
+        grid-column: 1 / -1;
       }
     }
   }
 }
 
+@media (max-width: 768px) {
+  .workspace-layout {
+    padding: 1.5rem;
 
+    .workspace-header {
+      flex-direction: column;
+      gap: 20px;
+
+      .header-actions {
+        width: 100%;
+        
+        button {
+          flex: 1;
+        }
+      }
+    }
+
+    .kanban-board {
+      grid-template-columns: 1fr;
+      gap: 16px;
+
+      .kanban-column {
+        min-height: auto;
+      }
+    }
+  }
+}
+
+// Drag and drop states
+.task-card.dragging {
+  opacity: 0.5;
+  transform: rotate(2deg);
+}
+
+.kanban-column.drag-over {
+  background: lighten(#f8fafc, 2%);
+  border: 2px dashed $primary-blue;
 }

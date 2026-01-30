@@ -1,12 +1,20 @@
+// Couleurs du système
+$primary-blue: #0ea5e9;
+$bg-navbar: #ffffff;
+$text-primary: #0f172a;
+$text-secondary: #64748b;
+$text-muted: #94a3b8;
+$border-color: #e2e8f0;
+
 .navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
   height: 64px;
-  background: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: $bg-navbar;
+  border-bottom: 1px solid $border-color;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -21,22 +29,27 @@
       gap: 12px;
 
       .logo-icon {
-        width: 32px;
-        height: 32px;
-        background: #2563eb;
-        border-radius: 8px;
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, $primary-blue 0%, #0284c7 100%);
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-weight: bold;
-        font-size: 18px;
+        box-shadow: 0 4px 12px rgba($primary-blue, 0.2);
+        
+        svg {
+          width: 20px;
+          height: 20px;
+        }
       }
 
       .logo-text {
         font-size: 18px;
-        font-weight: 600;
-        color: #0f172a;
+        font-weight: 700;
+        color: $text-primary;
+        letter-spacing: -0.3px;
       }
     }
   }
@@ -52,30 +65,32 @@
 
       .search-icon {
         position: absolute;
-        left: 12px;
+        left: 14px;
         top: 50%;
         transform: translateY(-50%);
-        color: #6b7280;
-        font-size: 16px;
+        color: $text-muted;
+        font-size: 14px;
       }
 
       .search-input {
         width: 100%;
-        padding: 10px 12px 10px 40px;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
+        padding: 10px 14px 10px 42px;
+        border: 1px solid $border-color;
+        border-radius: 10px;
         font-size: 14px;
-        background: #f9fafb;
-        color: #0f172a;
+        background: #f8fafc;
+        color: $text-primary;
+        transition: all 0.2s;
 
         &:focus {
           outline: none;
-          border-color: #2563eb;
-          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+          border-color: $primary-blue;
+          background: white;
+          box-shadow: 0 0 0 3px rgba($primary-blue, 0.1);
         }
 
         &::placeholder {
-          color: #6b7280;
+          color: $text-muted;
         }
       }
     }
@@ -84,7 +99,63 @@
   .navbar-right {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
+
+    // Bouton secondaire (Export)
+    .btn-secondary {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: white;
+      border: 1px solid $border-color;
+      border-radius: 10px;
+      color: $text-primary;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: #f8fafc;
+        border-color: $text-muted;
+      }
+
+      svg {
+        font-size: 14px;
+      }
+    }
+
+    // Bouton principal (New Project / New Ticket)
+    .btn-primary {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 24px;
+      background: $primary-blue;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba($primary-blue, 0.2);
+
+      &:hover {
+        background: darken($primary-blue, 5%);
+        box-shadow: 0 4px 12px rgba($primary-blue, 0.3);
+        transform: translateY(-1px);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      svg {
+        font-size: 14px;
+      }
+    }
 
     .nav-btn {
       display: flex;
@@ -93,19 +164,38 @@
       width: 40px;
       height: 40px;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       background: transparent;
-      color: #6b7280;
+      color: $text-muted;
       cursor: pointer;
       transition: all 0.2s;
+      position: relative;
 
       &:hover {
-        background: #f3f4f6;
-        color: #0f172a;
+        background: #f8fafc;
+        color: $text-primary;
       }
 
       svg {
         font-size: 18px;
+      }
+
+      // Badge de notification
+      &::after {
+        content: '';
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 8px;
+        height: 8px;
+        background: #ef4444;
+        border-radius: 50%;
+        border: 2px solid white;
+        display: none;
+      }
+
+      &.has-notification::after {
+        display: block;
       }
     }
 
@@ -115,77 +205,101 @@
       .user-btn {
         display: flex;
         align-items: center;
-        gap: 8px;
-        padding: 8px 12px;
+        gap: 10px;
+        padding: 6px 12px 6px 6px;
         border: none;
-        border-radius: 8px;
+        border-radius: 10px;
         background: transparent;
         cursor: pointer;
         transition: all 0.2s;
 
         &:hover {
-          background: #f3f4f6;
+          background: #f8fafc;
         }
 
         .user-avatar {
-          width: 32px;
-          height: 32px;
+          width: 36px;
+          height: 36px;
           border-radius: 50%;
-          background: #2563eb;
+          background: linear-gradient(135deg, $primary-blue 0%, #0284c7 100%);
           color: white;
           display: flex;
           align-items: center;
           justify-content: center;
           font-weight: 600;
           font-size: 14px;
+          box-shadow: 0 2px 8px rgba($primary-blue, 0.2);
         }
 
         .user-name {
           font-size: 14px;
-          font-weight: 500;
-          color: #0f172a;
+          font-weight: 600;
+          color: $text-primary;
+        }
+
+        svg {
+          color: $text-muted;
+          font-size: 12px;
+          transition: transform 0.2s;
+        }
+
+        &:hover svg {
+          transform: translateY(2px);
         }
       }
 
       .user-dropdown {
         position: absolute;
-        top: 100%;
+        top: calc(100% + 8px);
         right: 0;
-        margin-top: 8px;
-        width: 200px;
+        width: 220px;
         background: white;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border: 1px solid $border-color;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         z-index: 1000;
+        overflow: hidden;
+        animation: dropdownSlide 0.2s ease;
+
+        @keyframes dropdownSlide {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
 
         .dropdown-item {
           display: flex;
           align-items: center;
           gap: 12px;
           padding: 12px 16px;
-          color: #0f172a;
+          color: $text-primary;
           cursor: pointer;
           transition: background 0.2s;
+          font-size: 14px;
+          font-weight: 500;
 
           &:hover {
-            background: #f9fafb;
+            background: #f8fafc;
           }
 
           svg {
             font-size: 16px;
-            color: #6b7280;
+            color: $text-muted;
           }
 
           span {
-            font-size: 14px;
-            font-weight: 500;
+            flex: 1;
           }
         }
 
         .dropdown-divider {
           height: 1px;
-          background: #e5e7eb;
+          background: $border-color;
           margin: 4px 0;
         }
 
@@ -206,17 +320,55 @@
 }
 
 // Responsive design
+@media (max-width: 1024px) {
+  .navbar {
+    .navbar-center {
+      max-width: 400px;
+    }
+  }
+}
+
 @media (max-width: 768px) {
   .navbar {
     padding: 0 16px;
 
     .navbar-center {
       margin: 0 16px;
-      max-width: none;
+      max-width: 300px;
     }
 
     .navbar-right {
       gap: 8px;
+
+      .btn-secondary {
+        padding: 10px 16px;
+        
+        span {
+          display: none; // Cacher le texte "Export" sur mobile
+        }
+      }
+
+      .btn-primary {
+        padding: 10px 16px;
+      }
+
+      .user-btn .user-name {
+        display: none;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    .navbar-center {
+      display: none; // Cacher la recherche sur très petits écrans
+    }
+
+    .navbar-right {
+      .btn-secondary {
+        display: none; // Cacher Export sur très petits écrans
+      }
     }
   }
 }
