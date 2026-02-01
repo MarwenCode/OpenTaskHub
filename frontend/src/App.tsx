@@ -9,6 +9,7 @@ import SideBar from './components/sidebar/SideBar';
 import TaskList from './components/tasks/TaskList';
 import Dashboard from './pages/dashboard/Dashboard';
 import SingleWorkspace from './pages/singleworkspace/SingleWorkSpace';
+import MyTasks from './pages/mytasks/MyTasks';
 
 function App() {
   const { user } = useAppSelector((state) => state.auth);
@@ -69,12 +70,14 @@ function App() {
                 />
               } 
             />
+            <Route path="/my-tasks" element={<MyTasks />} />
             
             {/* Routes placeholder pour les autres pages */}
             <Route path="/my-tasks" element={<div className="page-placeholder">My Tasks - Coming Soon</div>} />
             <Route path="/team" element={<div className="page-placeholder">Team Members - Coming Soon</div>} />
             <Route path="/calendar" element={<div className="page-placeholder">Calendar - Coming Soon</div>} />
             <Route path="/settings" element={<div className="page-placeholder">Settings - Coming Soon</div>} />
+            
             
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>

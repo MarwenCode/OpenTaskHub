@@ -148,6 +148,24 @@ export const fetchComments = createAsyncThunk(
   }
 );
 
+
+//get my own tasks
+export const fetchOwnTasks = createAsyncThunk(
+  "tasks/fetchOwnTasks",
+  async (_, thunkAPI) => {  
+    try {
+      const config = getConfig(thunkAPI);
+      const response = await axios.get(`${API_URL}/my-tasks`, config);
+      return response.data.tasks;
+    } catch (error: any) {
+      const message = error.response?.data?.error || error.message || error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+
+
 export const taskSlice = createSlice({
   name: "tasks",
   initialState,
@@ -200,6 +218,19 @@ export const taskSlice = createSlice({
       })
       .addCase(addComment.fulfilled, (state, action) => {
         state.comments.push(action.payload);
+      })
+      .addCase(fetchOwnTasks.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchOwnTasks.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.tasks = action.payload;
+      })
+      .addCase(fetchOwnTasks.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload as string;
       });
   },
 });

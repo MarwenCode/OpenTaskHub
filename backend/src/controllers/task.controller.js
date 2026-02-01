@@ -20,6 +20,22 @@ export const getTasksByWorkspace = async (req, res) => {
   }
 };
 
+export const getOwnTasks = async (req, res) => {
+  try {
+    const userId = req.userId; // from JWT middleware   
+    const result = await db.query(
+      'SELECT * FROM tasks WHERE assigned_to = $1 ORDER BY created_at DESC',
+      [userId]
+    );  
+
+
+    res.status(200).json({ tasks: result.rows });
+  } catch (error) {
+    console.error('Get own tasks error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }     
+};
+
 /**
  * Get task by ID
  */

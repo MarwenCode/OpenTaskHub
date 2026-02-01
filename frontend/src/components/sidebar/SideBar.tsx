@@ -12,7 +12,6 @@ const SideBar: React.FC = () => {
   const navItems = [
     { path: "/", icon: FaHome, label: "Projects", key: "projects" },
     { path: "/my-tasks", icon: FaBell, label: "My Tasks", key: "tasks" },
-    { path: "/team", icon: FaUsers, label: "Team Members", key: "team" },
     { path: "/calendar", icon: FaCalendar, label: "Calendar", key: "calendar" },
     { path: "/settings", icon: FaCog, label: "Settings", key: "settings" },
   ];
@@ -45,7 +44,7 @@ const SideBar: React.FC = () => {
           <span className="workspace-icon">🚀</span>
         </div>
         <div className="workspace-info">
-          <span className="workspace-name">Acme Workspace</span>
+          <span className="workspace-name">Workspace</span>
           <span className="workspace-plan">Free Plan</span>
         </div>
         <button className="workspace-dropdown">
