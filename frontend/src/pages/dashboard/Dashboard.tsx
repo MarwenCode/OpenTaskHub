@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { FaEllipsisH, FaArrowRight, FaPlus } from "react-icons/fa";
 import "./dashboard.scss";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
@@ -9,27 +9,21 @@ import WorkSpaceForm from "../../components/workspaceForm/WorkSpaceForm";
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1553877522-43269d4ea984";
 
 interface DashboardProps {
-  showWorkspaceForm?: boolean;
-  onCloseWorkspaceForm?: () => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ 
-  showWorkspaceForm = false, 
-  onCloseWorkspaceForm 
-}) => {
+const Dashboard: React.FC<DashboardProps> = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const user = useAppSelector((state: any) => state.auth.user.user);
   const { workspaces, isLoading } = useAppSelector((state) => state.workspace);
+  const [showWorkspaceForm, setShowWorkspaceForm] = useState(false);
 
   useEffect(() => {
     dispatch(fetchWorkspaces());
   }, [dispatch]);
 
   const handleCloseForm = () => {
-    if (onCloseWorkspaceForm) {
-      onCloseWorkspaceForm();
-    }
+    setShowWorkspaceForm(false);
   };
 
   return (
@@ -103,7 +97,7 @@ const Dashboard: React.FC<DashboardProps> = ({
           {user?.role === "admin" && (
             <div
               className="project-card add-card"
-              onClick={onCloseWorkspaceForm}
+              onClick={() => setShowWorkspaceForm(true)}
             >
               <div className="add-content">
                 <div className="plus-circle">
