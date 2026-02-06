@@ -202,18 +202,21 @@ export const addComment = async (req, res) => {
     const { id } = req.params; // Task ID
     const { text } = req.body;
     const userId = req.userId; // Fixed: req.user is undefined, use req.userId from middleware
-    //add username
-    const username = req.username;
 
     if (!text) {
       return res.status(400).json({ error: 'Comment text is required' });
     }
 
     const result = await db.query(
-      `INSERT INTO comments (task_id, user_id, text, created_at)
-       VALUES ($1, $2, $3, NOW())
-       RETURNING id, task_id, user_id, text, created_at`,
-      [id, userId, username, text]
+      `WITH inserted AS (
+         INSERT INTO comments (task_id, user_id, text, created_at)
+         VALUES ($1, $2, $3, NOW())
+         RETURNING id, task_id, user_id, text, created_at
+       )
+       SELECT i.*, u.username, u.email 
+       FROM inserted i
+       JOIN users u ON i.user_id = u.id`,
+      [id, userId, text]
     );
 
     res.status(201).json({

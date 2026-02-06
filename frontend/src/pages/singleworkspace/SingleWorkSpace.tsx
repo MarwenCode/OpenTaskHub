@@ -130,7 +130,7 @@ const SingleWorkspace: React.FC<SingleWorkspaceProps> = ({
           </button>
           <div className="header-info">
             <div className="breadcrumb">
-              <span className="breadcrumb-item">Acme Workspace</span>
+              <span className="breadcrumb-item">Workspace</span>
               <span className="breadcrumb-separator">›</span>
               <span className="breadcrumb-item active">Projects</span>
             </div>

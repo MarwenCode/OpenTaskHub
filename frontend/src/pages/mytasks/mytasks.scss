@@ -241,14 +241,15 @@ $border-color: #e2e8f0;
         }
       }
 
-      .view-toggle {
+      // Toggle de densité (compact/comfortable)
+      .density-toggle {
         display: flex;
         gap: 4px;
         background: $bg-card;
         padding: 4px;
         border-radius: 8px;
 
-        .view-btn {
+        .density-btn {
           padding: 8px 12px;
           background: transparent;
           border: none;
@@ -256,6 +257,9 @@ $border-color: #e2e8f0;
           color: $text-muted;
           cursor: pointer;
           transition: all 0.2s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
 
           &:hover {
             color: $text-primary;
@@ -309,19 +313,87 @@ $border-color: #e2e8f0;
       }
     }
 
+    // ========================================
+    // VUE COMPACTE INTELLIGENTE
+    // ========================================
     .tasks-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
 
+      // ========================================
+      // MODE COMPACT (par défaut)
+      // ========================================
+      &.compact {
+        .task-item {
+          padding: 12px 16px; // Réduit de 20px
+          min-height: auto;
+          
+          .task-main {
+            gap: 0;
+            
+            .task-title {
+              font-size: 14px; // Réduit de 16px
+              margin-bottom: 6px; // Réduit de 8px
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              max-width: 100%;
+            }
+
+            .task-description {
+              display: none; // Caché en mode compact
+            }
+
+            .task-meta-inline {
+              gap: 12px; // Espacement entre les métadonnées
+            }
+          }
+        }
+      }
+
+      // ========================================
+      // MODE COMFORTABLE
+      // ========================================
+      &.comfortable {
+        gap: 12px;
+        
+        .task-item {
+          padding: 16px 20px;
+          
+          .task-main {
+            .task-title {
+              font-size: 16px;
+              margin-bottom: 8px;
+            }
+
+            .task-description {
+              display: -webkit-box;
+              -webkit-line-clamp: 1; // Une seule ligne
+              -webkit-box-orient: vertical;
+              overflow: hidden;
+              font-size: 13px;
+              color: $text-secondary;
+              margin-bottom: 10px;
+              line-height: 1.4;
+            }
+
+            .task-meta-inline {
+              gap: 16px;
+            }
+          }
+        }
+      }
+
+      // ========================================
+      // STYLES COMMUNS
+      // ========================================
       .task-item {
         background: white;
         border: 1px solid $border-color;
-        border-radius: 12px;
-        padding: 20px;
+        border-radius: 10px; // Réduit de 12px
         display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
+        align-items: center;
         cursor: pointer;
         transition: all 0.2s;
         position: relative;
@@ -329,10 +401,11 @@ $border-color: #e2e8f0;
 
         &:hover {
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-          transform: translateY(-2px);
+          transform: translateY(-1px);
           border-color: darken($border-color, 5%);
         }
 
+        // Barre de statut à gauche
         .task-status-indicator {
           position: absolute;
           left: 0;
@@ -341,81 +414,63 @@ $border-color: #e2e8f0;
           width: 4px;
         }
 
+        // Contenu principal
         .task-main {
           flex: 1;
-          display: flex;
-          gap: 16px;
           padding-left: 16px;
+          min-width: 0; // Important pour ellipsis
 
-          .task-content {
-            flex: 1;
-
-            .task-title {
-              font-size: 16px;
-              font-weight: 600;
-              color: $text-primary;
-              margin-bottom: 8px;
-              line-height: 1.4;
-            }
-
-            .task-description {
-              font-size: 14px;
-              color: $text-secondary;
-              line-height: 1.5;
-              margin-bottom: 12px;
-              display: -webkit-box;
-              -webkit-line-clamp: 2;
-              -webkit-box-orient: vertical;
-              overflow: hidden;
-            }
-
-            .task-meta {
-              display: flex;
-              flex-wrap: wrap;
-              gap: 12px;
-              font-size: 13px;
-
-              .task-workspace {
-                color: $text-muted;
-                font-weight: 500;
-              }
-
-              .task-priority {
-                font-weight: 600;
-              }
-            }
-          }
-        }
-
-        .task-sidebar {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-          gap: 8px;
-
-          .task-status-badge {
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 12px;
+          .task-title {
             font-weight: 600;
-            white-space: nowrap;
+            color: $text-primary;
+            line-height: 1.3;
           }
 
-          .task-date {
+          // Métadonnées inline (au lieu de colonnes)
+          .task-meta-inline {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            color: $text-secondary;
-            font-weight: 500;
+            flex-wrap: wrap;
+            font-size: 12px;
 
-            &.overdue {
-              color: $primary-red;
-              font-weight: 600;
+            .meta-item {
+              display: flex;
+              align-items: center;
+              gap: 4px;
+              font-weight: 500;
+              white-space: nowrap;
+
+              &.workspace {
+                color: $text-muted;
+              }
+
+              &.priority {
+                // Couleur dynamique inline
+              }
+
+              &.status {
+                // Couleur dynamique inline
+              }
+
+              &.date {
+                color: $text-secondary;
+
+                &.overdue {
+                  color: $primary-red;
+                  font-weight: 600;
+                }
+              }
+
+              svg {
+                font-size: 10px;
+              }
             }
 
-            svg {
-              font-size: 12px;
+            // Séparateurs entre les items (•)
+            .meta-item:not(:last-child)::after {
+              content: "•";
+              margin-left: 12px;
+              color: $border-color;
             }
           }
         }
@@ -458,21 +513,26 @@ $border-color: #e2e8f0;
           min-width: 100%;
         }
 
-        .view-toggle {
+        .density-toggle {
           margin-left: auto;
         }
       }
     }
 
-    .tasks-content .tasks-list .task-item {
-      flex-direction: column;
-      gap: 16px;
+    .tasks-content .tasks-list {
+      .task-item {
+        .task-main {
+          .task-meta-inline {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
 
-      .task-sidebar {
-        flex-direction: row;
-        align-items: center;
-        width: 100%;
-        justify-content: space-between;
+            // Enlever les séparateurs sur mobile
+            .meta-item:not(:last-child)::after {
+              display: none;
+            }
+          }
+        }
       }
     }
   }

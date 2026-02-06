@@ -31,7 +31,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
       <header className="dashboard-header">
         <div className="header-content">
           <div className="breadcrumb">
-            <span className="breadcrumb-item">Acme Workspace</span>
+            <span className="breadcrumb-item">Workspace</span>
             <span className="breadcrumb-separator">›</span>
             <span className="breadcrumb-item active">Projects</span>
           </div>

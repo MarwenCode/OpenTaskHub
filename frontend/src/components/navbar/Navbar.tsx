@@ -1,16 +1,29 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { FaSearch, FaBell, FaUser, FaCog, FaSignOutAlt, FaChevronDown, FaPlus } from 'react-icons/fa';
-import { useNavigate, useLocation, useParams } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { logout, reset } from '../../redux/authSlice/authSlice';
-import './navbar.scss';
+import React, { useState, useRef, useEffect } from "react";
+import {
+  FaSearch,
+  FaBell,
+  FaUser,
+  FaCog,
+  FaSignOutAlt,
+  FaChevronDown,
+  FaPlus,
+} from "react-icons/fa";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../redux/store";
+import { logout, reset } from "../../redux/authSlice/authSlice";
+import "./navbar.scss";
 
 interface NavbarProps {
   onNewProjectClick?: () => void;
   onNewTicketClick?: () => void;
+  onSearchChange?: (query: string) => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onNewProjectClick, onNewTicketClick }) => {
+const Navbar: React.FC<NavbarProps> = ({
+  onNewProjectClick,
+  onNewTicketClick,
+  onSearchChange,
+}) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -19,63 +32,76 @@ const Navbar: React.FC<NavbarProps> = ({ onNewProjectClick, onNewTicketClick }) 
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const [search, setSearch] = useState("");
+
   const handleLogout = () => {
     dispatch(logout());
     dispatch(reset());
-    navigate('/login');
+    navigate("/login");
     setShowDropdown(false);
   };
 
   // Fermer le dropdown si on clique en dehors
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setShowDropdown(false);
       }
     };
 
     if (showDropdown) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showDropdown]);
 
   const getUserInitial = () => {
-    return user?.username?.charAt(0).toUpperCase() || 'U';
+    return user?.username?.charAt(0).toUpperCase() || "U";
   };
 
   // Déterminer quel bouton afficher selon la route
   const getActionButton = () => {
     // Si on est sur la page d'un workspace (kanban board)
-    if (location.pathname.startsWith('/workspace/')) {
+    if (location.pathname.startsWith("/workspace/")) {
       return {
-        label: 'New Ticket',
+        label: "New Ticket",
         onClick: onNewTicketClick,
-        show: true
+        show: true,
       };
     }
-    
+
     // Si on est sur le dashboard principal
-    if (location.pathname === '/' && user?.role === 'admin') {
+    if (location.pathname === "/" && user?.role === "admin") {
       return {
-        label: 'New Project',
+        label: "New Project",
         onClick: onNewProjectClick,
-        show: true
+        show: true,
       };
     }
 
     // Pas de bouton pour les autres pages
     return {
-      label: '',
+      label: "",
       onClick: undefined,
-      show: false
+      show: false,
     };
   };
 
   const actionButton = getActionButton();
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearch(value);
+    if (onSearchChange) {
+      onSearchChange(value);
+    }
+  };
 
   return (
     <nav className="navbar">
@@ -100,18 +126,20 @@ const Navbar: React.FC<NavbarProps> = ({ onNewProjectClick, onNewTicketClick }) 
             type="text"
             placeholder="Search projects, tasks, or tags..."
             className="search-input"
+            value={search}
+            onChange={handleSearchChange}
           />
         </div>
       </div>
 
       <div className="navbar-right">
         {/* Bouton Export */}
-        <button className="btn-secondary">
+        {/* <button className="btn-secondary">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
             <path d="M8 2v12M2 8h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
           </svg>
           Export
-        </button>
+        </button> */}
 
         {/* Bouton dynamique (New Project ou New Ticket) */}
         {actionButton.show && (
@@ -129,22 +157,23 @@ const Navbar: React.FC<NavbarProps> = ({ onNewProjectClick, onNewTicketClick }) 
         <div className="user-menu" ref={dropdownRef}>
           <button
             className="user-btn"
-            onClick={() => setShowDropdown(!showDropdown)}
-          >
-            <div className="user-avatar">
-              {getUserInitial()}
-            </div>
-            <span className="user-name">{user?.username || 'User'}</span>
+            onClick={() => setShowDropdown(!showDropdown)}>
+            <div className="user-avatar">{getUserInitial()}</div>
+            <span className="user-name">{user?.username || "User"}</span>
             <FaChevronDown />
           </button>
 
           {showDropdown && (
             <div className="user-dropdown">
-              <div className="dropdown-item" onClick={() => navigate('/profile')}>
+              <div
+                className="dropdown-item"
+                onClick={() => navigate("/profile")}>
                 <FaUser />
                 <span>Profile</span>
               </div>
-              <div className="dropdown-item" onClick={() => navigate('/settings')}>
+              <div
+                className="dropdown-item"
+                onClick={() => navigate("/settings")}>
                 <FaCog />
                 <span>Settings</span>
               </div>

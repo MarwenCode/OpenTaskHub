@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaClock, FaCheckCircle, FaCircle, FaExclamationCircle, FaFilter, FaSearch } from "react-icons/fa";
+import { FaClock, FaCheckCircle, FaCircle, FaExclamationCircle, FaSearch, FaExpand, FaCompress } from "react-icons/fa";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { fetchOwnTasks } from "../../redux/taskSlice/taskSlice";
 import "./mytasks.scss";
@@ -9,6 +9,7 @@ import "./mytasks.scss";
 type FilterType = "all" | "today" | "week" | "overdue";
 type StatusFilter = "all" | "todo" | "in_progress" | "done";
 type PriorityFilter = "all" | "high" | "medium" | "low";
+type ViewDensity = "compact" | "comfortable";
 
 const MyTasks: React.FC = () => {
   const navigate = useNavigate();
@@ -21,20 +22,14 @@ const MyTasks: React.FC = () => {
   const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"list" | "kanban">("list");
+  const [viewDensity, setViewDensity] = useState<ViewDensity>("compact"); // Nouveau
 
-
-  // Récupérer toutes les tâches de l'utilisateur
-  // TODO: Créer une action Redux fetchMyTasks() qui récupère toutes les tâches assignées à l'utilisateur
-  // Pour l'instant, on utilise un tableau vide comme exemple
   const myTasks = useAppSelector((state: any) => state.task.tasks || []);
   const isLoading = useAppSelector((state: any) => state.task.isLoading);
 
-useEffect(() => {
-  dispatch(fetchOwnTasks());
-}, [dispatch]);
-
-
-console.log(myTasks);
+  useEffect(() => {
+    dispatch(fetchOwnTasks());
+  }, [dispatch]);
 
   // Fonction pour obtenir la date actuelle
   const getToday = () => {
@@ -71,7 +66,6 @@ console.log(myTasks);
   const getFilteredTasks = () => {
     let filtered = myTasks;
 
-    // Filtre par date
     if (activeFilter === "today") {
       filtered = filtered.filter((task: any) => task.due_date && isToday(task.due_date));
     } else if (activeFilter === "week") {
@@ -82,17 +76,14 @@ console.log(myTasks);
       );
     }
 
-    // Filtre par statut
     if (statusFilter !== "all") {
       filtered = filtered.filter((task: any) => task.status === statusFilter);
     }
 
-    // Filtre par priorité
     if (priorityFilter !== "all") {
       filtered = filtered.filter((task: any) => task.priority === priorityFilter);
     }
 
-    // Filtre par recherche
     if (searchQuery) {
       filtered = filtered.filter((task: any) =>
         task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -115,23 +106,31 @@ console.log(myTasks);
     ).length,
   };
 
-  // Fonction pour obtenir la couleur du statut
-  const getStatusColor = (status: string) => {
+  // Fonction pour obtenir l'icône et la couleur du statut
+  const getStatusInfo = (status: string) => {
     switch (status) {
-      case "todo": return "#94a3b8";
-      case "in_progress": return "#0ea5e9";
-      case "done": return "#10b981";
-      default: return "#94a3b8";
+      case "todo":
+        return { color: "#94a3b8", icon: "⚪", label: "To Do" };
+      case "in_progress":
+        return { color: "#0ea5e9", icon: "🔵", label: "In Progress" };
+      case "done":
+        return { color: "#10b981", icon: "✅", label: "Done" };
+      default:
+        return { color: "#94a3b8", icon: "⚪", label: "Unknown" };
     }
   };
 
-  // Fonction pour obtenir la couleur de la priorité
-  const getPriorityColor = (priority: string) => {
+  // Fonction pour obtenir l'icône et la couleur de la priorité
+  const getPriorityInfo = (priority: string) => {
     switch (priority) {
-      case "high": return "#ef4444";
-      case "medium": return "#f59e0b";
-      case "low": return "#10b981";
-      default: return "#94a3b8";
+      case "high":
+        return { color: "#ef4444", icon: "🔴", label: "High" };
+      case "medium":
+        return { color: "#f59e0b", icon: "🟡", label: "Med" };
+      case "low":
+        return { color: "#10b981", icon: "🟢", label: "Low" };
+      default:
+        return { color: "#94a3b8", icon: "⚪", label: "None" };
     }
   };
 
@@ -153,9 +152,9 @@ console.log(myTasks);
   };
 
   // Fonction pour naviguer vers le workspace de la tâche
-  // const handleTaskClick = (task: any) => {
-  //   navigate(`/workspace/${task.workspace_id}`);
-  // };
+  const handleTaskClick = (task: any) => {
+    navigate(`/workspace/${task.workspace_id}`);
+  };
 
   return (
     <div className="mytasks-container">
@@ -276,28 +275,21 @@ console.log(myTasks);
             <option value="low">Low</option>
           </select>
 
-          <div className="view-toggle">
+          {/* Toggle de densité */}
+          <div className="density-toggle">
             <button
-              className={`view-btn ${viewMode === "list" ? "active" : ""}`}
-              onClick={() => setViewMode("list")}
-              title="List view"
+              className={`density-btn ${viewDensity === "compact" ? "active" : ""}`}
+              onClick={() => setViewDensity("compact")}
+              title="Compact view"
             >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                <rect x="2" y="3" width="12" height="2" rx="1"/>
-                <rect x="2" y="7" width="12" height="2" rx="1"/>
-                <rect x="2" y="11" width="12" height="2" rx="1"/>
-              </svg>
+              <FaCompress />
             </button>
             <button
-              className={`view-btn ${viewMode === "kanban" ? "active" : ""}`}
-              onClick={() => setViewMode("kanban")}
-              title="Kanban view"
+              className={`density-btn ${viewDensity === "comfortable" ? "active" : ""}`}
+              onClick={() => setViewDensity("comfortable")}
+              title="Comfortable view"
             >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                <rect x="2" y="2" width="4" height="12" rx="1"/>
-                <rect x="7" y="2" width="4" height="12" rx="1"/>
-                <rect x="12" y="2" width="2" height="12" rx="1"/>
-              </svg>
+              <FaExpand />
             </button>
           </div>
         </div>
@@ -320,62 +312,62 @@ console.log(myTasks);
             </p>
           </div>
         ) : (
-          <div className={`tasks-list ${viewMode}`}>
-            {filteredTasks.map((task: any) => (
-              <div
-                key={task.id}
-                className="task-item"
-                onClick={() => handleTaskClick(task)}
-              >
-                <div className="task-main">
+          <div className={`tasks-list ${viewDensity}`}>
+            {filteredTasks.map((task: any) => {
+              const statusInfo = getStatusInfo(task.status);
+              const priorityInfo = getPriorityInfo(task.priority);
+              
+              return (
+                <div
+                  key={task.id}
+                  className="task-item"
+                  onClick={() => handleTaskClick(task)}
+                >
+                  {/* Barre de statut à gauche */}
                   <div
                     className="task-status-indicator"
-                    style={{ backgroundColor: getStatusColor(task.status) }}
+                    style={{ backgroundColor: statusInfo.color }}
                   />
-                  <div className="task-content">
+
+                  {/* Contenu principal */}
+                  <div className="task-main">
                     <h4 className="task-title">{task.title}</h4>
-                    {task.description && (
+                    
+                    {/* Description (visible uniquement en mode comfortable) */}
+                    {viewDensity === "comfortable" && task.description && (
                       <p className="task-description">{task.description}</p>
                     )}
-                    <div className="task-meta">
-                      <span className="task-workspace">
+                    
+                    {/* Métadonnées inline */}
+                    <div className="task-meta-inline">
+                      <span className="meta-item workspace">
                         📁 {task.workspace_name || "Workspace"}
                       </span>
+                      
                       {task.priority && (
+                        <span className="meta-item priority" style={{ color: priorityInfo.color }}>
+                          {priorityInfo.icon} {priorityInfo.label}
+                        </span>
+                      )}
+                      
+                      <span className="meta-item status" style={{ color: statusInfo.color }}>
+                        {statusInfo.icon} {statusInfo.label}
+                      </span>
+                      
+                      {task.due_date && (
                         <span
-                          className="task-priority"
-                          style={{ color: getPriorityColor(task.priority) }}
+                          className={`meta-item date ${
+                            isOverdue(task.due_date, task.status) ? "overdue" : ""
+                          }`}
                         >
-                          {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)} Priority
+                          <FaClock /> {formatDate(task.due_date)}
                         </span>
                       )}
                     </div>
                   </div>
                 </div>
-                <div className="task-sidebar">
-                  <span
-                    className="task-status-badge"
-                    style={{ 
-                      backgroundColor: `${getStatusColor(task.status)}15`,
-                      color: getStatusColor(task.status)
-                    }}
-                  >
-                    {task.status === "in_progress" ? "In Progress" : 
-                     task.status === "todo" ? "To Do" : "Done"}
-                  </span>
-                  {task.due_date && (
-                    <span
-                      className={`task-date ${
-                        isOverdue(task.due_date, task.status) ? "overdue" : ""
-                      }`}
-                    >
-                      <FaClock />
-                      {formatDate(task.due_date)}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
