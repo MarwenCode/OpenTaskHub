@@ -1,3 +1,4 @@
+// App.tsx
 import React, { useState } from 'react';
 import './App.css';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
@@ -72,12 +73,9 @@ function App() {
             />
             <Route path="/my-tasks" element={<MyTasks />} />
             
-            {/* Routes placeholder pour les autres pages */}
-            <Route path="/my-tasks" element={<div className="page-placeholder">My Tasks - Coming Soon</div>} />
             <Route path="/team" element={<div className="page-placeholder">Team Members - Coming Soon</div>} />
             <Route path="/calendar" element={<div className="page-placeholder">Calendar - Coming Soon</div>} />
             <Route path="/settings" element={<div className="page-placeholder">Settings - Coming Soon</div>} />
-            
             
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>

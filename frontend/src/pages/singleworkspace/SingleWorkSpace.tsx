@@ -10,11 +10,13 @@ import "./singleworkspace.scss";
 interface SingleWorkspaceProps {
   showTicketForm?: boolean;
   onCloseTicketForm?: () => void;
+  searchQuery?: string;
 }
 
 const SingleWorkspace: React.FC<SingleWorkspaceProps> = ({ 
   showTicketForm: externalShowTicketForm = false, 
-  onCloseTicketForm 
+  onCloseTicketForm,
+  searchQuery = "",
 }) => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -97,6 +99,17 @@ const SingleWorkspace: React.FC<SingleWorkspaceProps> = ({
     setDraggedTask(null);
   };
 
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const filteredTasks = normalizedQuery
+    ? tasks.filter((task: any) => {
+        const hay = [task.title, task.description, task.category]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        return hay.includes(normalizedQuery);
+      })
+    : tasks;
+
   const columns = [
     { 
       id: "todo", 
@@ -142,7 +155,7 @@ const SingleWorkspace: React.FC<SingleWorkspaceProps> = ({
 
       <div className="kanban-board">
         {columns.map((col) => {
-          const colTasks = tasks.filter(
+          const colTasks = filteredTasks.filter(
             (task: any) => task.status === col.status
           );
           

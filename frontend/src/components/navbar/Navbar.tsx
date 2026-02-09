@@ -1,3 +1,4 @@
+// Navbar.tsx
 import React, { useState, useRef, useEffect } from "react";
 import {
   FaSearch,
@@ -7,8 +8,10 @@ import {
   FaSignOutAlt,
   FaChevronDown,
   FaPlus,
+  FaTasks,
+  FaFolder,
 } from "react-icons/fa";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { logout, reset } from "../../redux/authSlice/authSlice";
 import "./navbar.scss";
@@ -16,23 +19,36 @@ import "./navbar.scss";
 interface NavbarProps {
   onNewProjectClick?: () => void;
   onNewTicketClick?: () => void;
-  onSearchChange?: (query: string) => void;
+}
+
+interface SearchResult {
+  id: string;
+  title: string;
+  type: 'task' | 'workspace';
+  workspaceId?: string;
+  description?: string;
 }
 
 const Navbar: React.FC<NavbarProps> = ({
   onNewProjectClick,
   onNewTicketClick,
-  onSearchChange,
 }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const params = useParams();
   const user = useAppSelector((state) => state.auth.user);
+  
+  // Get all tasks and workspaces from Redux
+  const allTasks = useAppSelector((state) => state.task.tasks);
+  const workspaces = useAppSelector((state) => state.workspace.workspaces);
+  
   const [showDropdown, setShowDropdown] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const [search, setSearch] = useState("");
+  const searchRef = useRef<HTMLDivElement>(null);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -41,7 +57,7 @@ const Navbar: React.FC<NavbarProps> = ({
     setShowDropdown(false);
   };
 
-  // Fermer le dropdown si on clique en dehors
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -50,24 +66,83 @@ const Navbar: React.FC<NavbarProps> = ({
       ) {
         setShowDropdown(false);
       }
+      
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
+        setShowSearchResults(false);
+      }
     };
 
-    if (showDropdown) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showDropdown]);
+  }, []);
+
+  // Search logic
+  useEffect(() => {
+    if (searchQuery.trim().length < 2) {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      return;
+    }
+
+    const query = searchQuery.toLowerCase();
+    const results: SearchResult[] = [];
+
+    // Search in workspaces
+    workspaces?.forEach((workspace: any) => {
+      if (workspace.name?.toLowerCase().includes(query)) {
+        results.push({
+          id: workspace.id,
+          title: workspace.name,
+          type: 'workspace',
+          description: workspace.description,
+        });
+      }
+    });
+
+    // Search in tasks
+    allTasks?.forEach((task: any) => {
+      const searchText = `${task.title} ${task.description} ${task.category}`.toLowerCase();
+      if (searchText.includes(query)) {
+        results.push({
+          id: task.id,
+          title: task.title,
+          type: 'task',
+          workspaceId: task.workspace_id,
+          description: task.description,
+        });
+      }
+    });
+
+    setSearchResults(results.slice(0, 10)); // Limit to 10 results
+    setShowSearchResults(results.length > 0);
+  }, [searchQuery, allTasks, workspaces]);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleResultClick = (result: SearchResult) => {
+    if (result.type === 'workspace') {
+      navigate(`/workspace/${result.id}`);
+    } else if (result.type === 'task') {
+      navigate(`/workspace/${result.workspaceId}`);
+      // Optionally: You could add logic to open the task detail modal
+    }
+    
+    setSearchQuery("");
+    setShowSearchResults(false);
+  };
 
   const getUserInitial = () => {
     return user?.username?.charAt(0).toUpperCase() || "U";
   };
 
-  // Déterminer quel bouton afficher selon la route
   const getActionButton = () => {
-    // Si on est sur la page d'un workspace (kanban board)
     if (location.pathname.startsWith("/workspace/")) {
       return {
         label: "New Ticket",
@@ -76,7 +151,6 @@ const Navbar: React.FC<NavbarProps> = ({
       };
     }
 
-    // Si on est sur le dashboard principal
     if (location.pathname === "/" && user?.role === "admin") {
       return {
         label: "New Project",
@@ -85,7 +159,6 @@ const Navbar: React.FC<NavbarProps> = ({
       };
     }
 
-    // Pas de bouton pour les autres pages
     return {
       label: "",
       onClick: undefined,
@@ -94,14 +167,6 @@ const Navbar: React.FC<NavbarProps> = ({
   };
 
   const actionButton = getActionButton();
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearch(value);
-    if (onSearchChange) {
-      onSearchChange(value);
-    }
-  };
 
   return (
     <nav className="navbar">
@@ -120,40 +185,59 @@ const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       <div className="navbar-center">
-        <div className="search-bar">
-          <FaSearch className="search-icon" />
-          <input
-            type="text"
-            placeholder="Search projects, tasks, or tags..."
-            className="search-input"
-            value={search}
-            onChange={handleSearchChange}
-          />
+        <div className="search-container" ref={searchRef}>
+          <div className="search-bar">
+            <FaSearch className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search projects, tasks, or tags..."
+              className="search-input"
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+          </div>
+          
+          {showSearchResults && (
+            <div className="search-results-dropdown">
+              {searchResults.map((result) => (
+                <div
+                  key={`${result.type}-${result.id}`}
+                  className="search-result-item"
+                  onClick={() => handleResultClick(result)}
+                >
+                  <div className="result-icon">
+                    {result.type === 'workspace' ? <FaFolder /> : <FaTasks />}
+                  </div>
+                  <div className="result-content">
+                    <div className="result-title">{result.title}</div>
+                    {result.description && (
+                      <div className="result-description">
+                        {result.description.substring(0, 60)}
+                        {result.description.length > 60 ? '...' : ''}
+                      </div>
+                    )}
+                  </div>
+                  <div className="result-type">
+                    {result.type === 'workspace' ? 'Project' : 'Task'}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
       <div className="navbar-right">
-        {/* Bouton Export */}
-        {/* <button className="btn-secondary">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M8 2v12M2 8h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-          </svg>
-          Export
-        </button> */}
-
-        {/* Bouton dynamique (New Project ou New Ticket) */}
         {actionButton.show && (
           <button className="btn-primary" onClick={actionButton.onClick}>
             <FaPlus /> {actionButton.label}
           </button>
         )}
 
-        {/* Notifications */}
         <button className="nav-btn has-notification">
           <FaBell />
         </button>
 
-        {/* User Menu */}
         <div className="user-menu" ref={dropdownRef}>
           <button
             className="user-btn"
