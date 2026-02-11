@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaUpload, FaTimes, FaBriefcase, FaUsers, FaPalette } from 'react-icons/fa';
-import './workspaceForm.scss';
+import './workspaceform.scss';
 import { useAppDispatch } from '../../redux/store';
 import { createWorkspace } from '../../redux/worksapceSlice/workSpaceSlice';
 
