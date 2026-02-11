@@ -57,14 +57,28 @@ const SideBar: React.FC = () => {
       <nav className="sidebar-nav">
         {navItems.map((item) => {
           const Icon = item.icon;
+          const isUnderConstruction = item.key === "calendar";
+
           return (
             <button
               key={item.key}
               className={`nav-item ${isActive(item.path) ? "active" : ""}`}
-              onClick={() => navigate(item.path)}
+              onClick={() => !isUnderConstruction && navigate(item.path)}
+              style={isUnderConstruction ? { opacity: 0.6, cursor: "not-allowed" } : {}}
             >
               <Icon className="nav-icon" />
               <span className="nav-label">{item.label}</span>
+              {isUnderConstruction && (
+                <span style={{
+                  marginLeft: "auto",
+                  fontSize: "0.65rem",
+                  backgroundColor: "#f59e0b", // Amber/Orange color
+                  color: "#fff",
+                  padding: "2px 6px",
+                  borderRadius: "4px",
+                  fontWeight: "600"
+                }}>Soon</span>
+              )}
             </button>
           );
         })}

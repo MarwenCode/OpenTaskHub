@@ -1,4 +1,20 @@
 -- Enable UUIDs
+
+-- =================================================================
+-- INSTRUCTION : Exécutez tout ce script pour corriger l'erreur 500 (Mise à jour du schéma).
+-- =================================================================
+
+-- =================================================================
+-- NETTOYAGE (OPTIONNEL - DÉCOMMENTER POUR RÉINITIALISER LA DB)
+-- Attention : Cela supprimera toutes les données existantes !
+-- Utile si votre schéma local/prod n'est pas synchronisé avec ce script.
+-- =================================================================
+DROP TABLE IF EXISTS comments CASCADE;
+DROP TABLE IF EXISTS tasks CASCADE;
+DROP TABLE IF EXISTS workspace_members CASCADE;
+DROP TABLE IF EXISTS workspaces CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
 -- =================================================================
 -- EXTENSION: pgcrypto
 -- Active l'extension pour la génération d'UUIDs.
@@ -25,8 +41,13 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS workspaces (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
+    description TEXT,
+    category VARCHAR(100),
+    visibility VARCHAR(50) DEFAULT 'private' CHECK (visibility IN ('private', 'public')),
+    image_url TEXT,
     owner_id UUID REFERENCES users(id) ON DELETE SET NULL, -- L'utilisateur qui a créé le workspace
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- =================================================================
@@ -89,3 +110,33 @@ CREATE TRIGGER set_timestamp_tasks
 BEFORE UPDATE ON tasks
 FOR EACH ROW
 EXECUTE FUNCTION trigger_set_timestamp();
+
+-- Trigger pour la table 'workspaces'
+DROP TRIGGER IF EXISTS set_timestamp_workspaces ON workspaces;
+CREATE TRIGGER set_timestamp_workspaces
+BEFORE UPDATE ON workspaces
+FOR EACH ROW
+EXECUTE FUNCTION trigger_set_timestamp();
+
+-- =================================================================
+-- TRIGGER: auto_add_owner_to_workspace_members
+-- Ajoute automatiquement le créateur d'un workspace comme premier membre.
+-- Cela garantit que l'utilisateur qui crée un espace de travail peut immédiatement le voir et l'utiliser.
+-- =================================================================
+CREATE OR REPLACE FUNCTION add_owner_as_member()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Insère le propriétaire du nouveau workspace dans la table des membres
+  INSERT INTO workspace_members (workspace_id, user_id)
+  VALUES (NEW.id, NEW.owner_id);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trigger_add_owner_as_member ON workspaces;
+CREATE TRIGGER trigger_add_owner_as_member
+AFTER INSERT ON workspaces
+FOR EACH ROW
+-- On s'assure que owner_id n'est pas NULL avant de lancer le trigger
+WHEN (NEW.owner_id IS NOT NULL)
+EXECUTE FUNCTION add_owner_as_member();

@@ -25,7 +25,7 @@ const TicketForm: React.FC<TicketFormProps> = ({
   const dispatch = useDispatch<any>();
   
   // Get token from Redux store (same way your taskSlice does it)
-  const token = useSelector((state: any) => state.auth.user?.token);
+  const token = useSelector((state: any) => state.auth?.user?.token);
   
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
