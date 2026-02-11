@@ -1,19 +1,20 @@
 // App.tsx
-import React, { useState } from 'react';
-import './App.css';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { useAppSelector } from './redux/store';
-import Login from './components/auth/Login';
-import Register from './components/auth/Register';
-import Navbar from './components/navbar/Navbar';
-import SideBar from './components/sidebar/SideBar';
-import TaskList from './components/tasks/TaskList';
-import Dashboard from './pages/dashboard/Dashboard';
-import SingleWorkspace from './pages/singleworkspace/SingleWorkSpace';
-import MyTasks from './pages/mytasks/MyTasks';
+import React, { useState } from "react";
+import "./App.css";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useAppSelector } from "./redux/store";
+import Login from "./components/auth/Login";
+import Register from "./components/auth/Register";
+import Navbar from "./components/navbar/Navbar";
+import SideBar from "./components/sidebar/SideBar";
+import TaskList from "./components/tasks/TaskList";
+import Dashboard from "./pages/dashboard/Dashboard";
+import SingleWorkspace from "./pages/singleworkspace/SingleWorkSpace";
+import MyTasks from "./pages/mytasks/MyTasks";
 
 function App() {
-  const { user } = useAppSelector((state) => state.auth);
+  // On s'assure que state.auth existe avant de déstructurer user
+  const { user } = useAppSelector((state) => state.auth || { user: null });
   const location = useLocation();
 
   // État pour contrôler l'affichage des modals
@@ -21,7 +22,12 @@ function App() {
   const [showTicketForm, setShowTicketForm] = useState(false);
 
   // Routes qui ne doivent pas afficher la sidebar et navbar
-  const noLayoutRoutes = ['/login', '/register', '/admin/login', '/admin/register'];
+  const noLayoutRoutes = [
+    "/login",
+    "/register",
+    "/admin/login",
+    "/admin/register",
+  ];
   const shouldShowLayout = user && !noLayoutRoutes.includes(location.pathname);
 
   // Handlers pour les boutons du Navbar
@@ -36,48 +42,77 @@ function App() {
   return (
     <div className="app-container">
       {shouldShowLayout && (
-        <Navbar 
+        <Navbar
           onNewProjectClick={handleNewProjectClick}
           onNewTicketClick={handleNewTicketClick}
         />
       )}
-      
+
       <div className="app-body">
         {shouldShowLayout && <SideBar />}
-        
-        <div className={`main-content ${shouldShowLayout ? 'with-layout' : ''}`}>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/admin/register" element={<Register />} />
-            <Route path="/admin/login" element={<Login />} />
 
-            <Route path="/workspaces/:id/tasks" element={<TaskList />} />
-            <Route 
-              path="/" 
-              element={
-                <Dashboard 
-                  showWorkspaceForm={showWorkspaceForm}
-                  onCloseWorkspaceForm={() => setShowWorkspaceForm(false)}
-                />
-              } 
+        <div
+          className={`main-content ${shouldShowLayout ? "with-layout" : ""}`}>
+          <Routes>
+            {/* Routes Publiques : accessibles seulement si NON connecté */}
+            <Route
+              path="/login"
+              element={!user ? <Login /> : <Navigate to="/" />}
             />
-            <Route 
-              path="/workspace/:id" 
-              element={
-                <SingleWorkspace 
-                  showTicketForm={showTicketForm}
-                  onCloseTicketForm={() => setShowTicketForm(false)}
-                />
-              } 
+            <Route
+              path="/register"
+              element={!user ? <Register /> : <Navigate to="/" />}
             />
-            <Route path="/my-tasks" element={<MyTasks />} />
-            
-            <Route path="/team" element={<div className="page-placeholder">Team Members - Coming Soon</div>} />
-            <Route path="/calendar" element={<div className="page-placeholder">Calendar - Coming Soon</div>} />
-            <Route path="/settings" element={<div className="page-placeholder">Settings - Coming Soon</div>} />
-            
-            <Route path="*" element={<Navigate to="/" />} />
+            <Route
+              path="/admin/login"
+              element={!user ? <Login /> : <Navigate to="/" />}
+            />
+            <Route
+              path="/admin/register"
+              element={!user ? <Register /> : <Navigate to="/" />}
+            />
+
+            {/* Routes Protégées : redirigent vers /login si user est null */}
+            <Route
+              path="/"
+              element={
+                user ? (
+                  <Dashboard
+                    showWorkspaceForm={showWorkspaceForm}
+                    onCloseWorkspaceForm={() => setShowWorkspaceForm(false)}
+                  />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+
+            <Route
+              path="/workspace/:id"
+              element={
+                user ? (
+                  <SingleWorkspace
+                    showTicketForm={showTicketForm}
+                    onCloseTicketForm={() => setShowTicketForm(false)}
+                  />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+
+            <Route
+              path="/my-tasks"
+              element={user ? <MyTasks /> : <Navigate to="/login" />}
+            />
+
+            <Route
+              path="/workspaces/:id/tasks"
+              element={user ? <TaskList /> : <Navigate to="/login" />}
+            />
+
+            {/* Redirection automatique pour toute autre URL */}
+            <Route path="*" element={<Navigate to={user ? "/" : "/login"} />} />
           </Routes>
         </div>
       </div>
