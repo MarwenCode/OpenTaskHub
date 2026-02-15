@@ -1,6 +1,3 @@
-# Compose file format (la cle "version" est acceptee mais obsolete dans les versions recentes)
-version: "3.9"
-
 # Liste des services (conteneurs) de l'application
 services:
   # Frontend React/Vite
@@ -46,18 +43,18 @@ services:
     # Variables d'environnement pour l'API
     environment:
       # Port d'ecoute de l'API dans le conteneur
-      PORT: 5000
+      PORT: ${PORT:-5000}
       # Mode runtime Node
-      NODE_ENV: development
+      NODE_ENV: ${NODE_ENV:-development}
       # Connexion Postgres (le host = nom du service DB dans Compose)
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: opentaskhub
-      DB_USER: postgres
-      DB_PASSWORD: marwen
-      # Secrets applicatifs (a externaliser dans un .env en pratique)
-      JWT_SECRET: 152548
-      ADMIN_SECRET: super_secret_admin_key_123
+      DB_HOST: ${DB_HOST:-db}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME:-opentaskhub}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      # Secrets applicatifs charges depuis .env local (non versionne)
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_SECRET: ${ADMIN_SECRET}
     # Attend que la DB soit "healthy" avant de lancer backend
     depends_on:
       db:
@@ -73,9 +70,9 @@ services:
     restart: unless-stopped
     # Variables d'initialisation de la base
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: marwen
-      POSTGRES_DB: opentaskhub
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-opentaskhub}
     # Port hote pour se connecter a Postgres depuis la machine
     ports:
       - "5432:5432"
