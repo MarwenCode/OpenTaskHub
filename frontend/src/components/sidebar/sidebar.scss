@@ -12,7 +12,8 @@ $border-color: #e2e8f0;
   width: 280px;
   height: 100vh;
   background: $bg-sidebar;
-  border-right: 1px solid $border-color;
+  border-right: none;
+  box-shadow: 8px 0 24px rgba(15, 23, 42, 0.04);
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -23,7 +24,7 @@ $border-color: #e2e8f0;
   // Header avec logo
   .sidebar-header {
     padding: 24px 20px;
-    border-bottom: 1px solid $border-color;
+    border-bottom: none;
 
     .logo-container {
       display: flex;
@@ -163,17 +164,10 @@ $border-color: #e2e8f0;
         background: linear-gradient(135deg, rgba($primary-blue, 0.1) 0%, rgba($primary-blue, 0.05) 100%);
         color: $primary-blue;
         font-weight: 600;
+        box-shadow: inset 0 0 0 1px rgba($primary-blue, 0.14);
 
         &::before {
-          content: "";
-          position: absolute;
-          left: 0;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 3px;
-          height: 24px;
-          background: $primary-blue;
-          border-radius: 0 2px 2px 0;
+          content: none;
         }
       }
     }
@@ -182,7 +176,7 @@ $border-color: #e2e8f0;
   // Footer avec profil utilisateur
   .sidebar-footer {
     padding: 16px;
-    border-top: 1px solid $border-color;
+    border-top: none;
 
     .user-profile {
       display: flex;

@@ -36,7 +36,10 @@ const Navbar: React.FC<NavbarProps> = ({
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const user = useAppSelector((state) => state.auth.user);
+  const authUser = useAppSelector((state) => state.auth.user as any);
+  const user = authUser?.user ?? authUser;
+
+  console.log("Navbar - Auth User:", authUser);
   
   // Get all tasks and workspaces from Redux
   const allTasks = useAppSelector((state) => state.task.tasks);
@@ -139,7 +142,7 @@ const Navbar: React.FC<NavbarProps> = ({
   };
 
   const getUserInitial = () => {
-    return user?.username?.charAt(0).toUpperCase() || "U";
+    return user?.username?.trim()?.charAt(0)?.toUpperCase() || "U";
   };
 
   const getActionButton = () => {
