@@ -266,15 +266,7 @@ $border-color: #e2e8f0;
   }
 
   &.has-notification::after {
-    content: '';
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 8px;
-    height: 8px;
-    background: #ef4444;
-    border-radius: 50%;
-    border: 2px solid $bg-navbar;
+    content: none;
   }
 
   svg {
@@ -284,6 +276,104 @@ $border-color: #e2e8f0;
 
 .user-menu {
   position: relative;
+}
+
+.notification-menu {
+  position: relative;
+}
+
+.notification-badge {
+  position: absolute;
+  top: 4px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid $bg-navbar;
+}
+
+.notification-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 320px;
+  max-height: 360px;
+  background: $bg-navbar;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+  z-index: 1000;
+  overflow: hidden;
+
+  .notification-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 13px;
+    font-weight: 600;
+    color: $text-primary;
+  }
+
+  .mark-all-btn {
+    border: none;
+    background: transparent;
+    color: $primary-blue;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .notification-list {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .notification-item {
+    width: 100%;
+    text-align: left;
+    border: none;
+    border-bottom: 1px solid #f8fafc;
+    background: #fff;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: #f8fafc;
+    }
+
+    &.unread {
+      background: rgba(14, 165, 233, 0.06);
+    }
+
+    .notification-message {
+      font-size: 13px;
+      color: $text-primary;
+      margin-bottom: 4px;
+      line-height: 1.35;
+    }
+
+    .notification-date {
+      font-size: 11px;
+      color: $text-muted;
+    }
+  }
+
+  .notification-state {
+    padding: 14px 12px;
+    font-size: 13px;
+    color: $text-secondary;
+  }
 }
 
 .user-btn {

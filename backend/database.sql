@@ -140,3 +140,18 @@ FOR EACH ROW
 -- On s'assure que owner_id n'est pas NULL avant de lancer le trigger
 WHEN (NEW.owner_id IS NOT NULL)
 EXECUTE FUNCTION add_owner_as_member();
+
+-- =================================================================
+--create notification table
+-- =================================================================
+
+CREATE TABLE IF NOT EXISTS notifications (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    message TEXT NOT NULL,
+    type VARCHAR(50) NOT NULL CHECK (type IN ('task_assigned', 'task_updated', 'workspace_invite')),
+    task_id UUID REFERENCES tasks(id) ON DELETE CASCADE,
+    workspace_id UUID REFERENCES workspaces(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    is_read BOOLEAN DEFAULT FALSE
+);

@@ -4,6 +4,7 @@ import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux';
 import authReducer from './authSlice/authSlice';
 import workspaceReducer from './worksapceSlice/workSpaceSlice';
 import taskReducer from './taskSlice/taskSlice';
+import notificationReducer from './notificationSlice/notificationSlice';
 
 
 export const store = configureStore({
@@ -11,6 +12,7 @@ export const store = configureStore({
     auth: authReducer,
     workspace: workspaceReducer,
     task: taskReducer,
+    notification: notificationReducer,
     
     
   },

@@ -14,6 +14,7 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { logout, reset } from "../../redux/authSlice/authSlice";
+import { fetchNotifications, markAllNotificationsAsRead, markNotificationAsRead } from "../../redux/notificationSlice/notificationSlice";
 import "./navbar.scss";
 
 interface NavbarProps {
@@ -38,20 +39,25 @@ const Navbar: React.FC<NavbarProps> = ({
   const location = useLocation();
   const authUser = useAppSelector((state) => state.auth.user as any);
   const user = authUser?.user ?? authUser;
+  const notifications = useAppSelector((state) => state.notification.notifications);
+  const unreadCount = useAppSelector((state) => state.notification.unreadCount);
+  const isLoading = useAppSelector((state) => state.notification.isLoading);
+  const isError = useAppSelector((state) => state.notification.isError);
+  const message = useAppSelector((state) => state.notification.message);
 
-  console.log("Navbar - Auth User:", authUser);
-  
   // Get all tasks and workspaces from Redux
   const allTasks = useAppSelector((state) => state.task.tasks);
   const workspaces = useAppSelector((state) => state.workspace.workspaces);
   
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showNotifDropdown, setShowNotifDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
+  const notifRef = useRef<HTMLDivElement>(null);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -75,6 +81,13 @@ const Navbar: React.FC<NavbarProps> = ({
         !searchRef.current.contains(event.target as Node)
       ) {
         setShowSearchResults(false);
+      }
+
+      if (
+        notifRef.current &&
+        !notifRef.current.contains(event.target as Node)
+      ) {
+        setShowNotifDropdown(false);
       }
     };
 
@@ -171,6 +184,33 @@ const Navbar: React.FC<NavbarProps> = ({
 
   const actionButton = getActionButton();
 
+
+  useEffect(() =>  {
+    dispatch(fetchNotifications());
+  }, [dispatch]);
+
+  
+
+
+
+  // Notification handlers
+  const handleNotificationClick = (notificationId: string) => {
+    dispatch(markNotificationAsRead(notificationId));
+    // Optionally navigate based on notification type
+  };
+  const handleMarkAllNotificationsAsRead = () => {
+    dispatch(markAllNotificationsAsRead());
+  };
+
+  const toggleNotificationDropdown = () => {
+    const nextOpenState = !showNotifDropdown;
+    setShowNotifDropdown(nextOpenState);
+    if (nextOpenState) {
+      dispatch(fetchNotifications());
+    }
+  };
+
+
   return (
     <nav className="navbar">
       <div className="navbar-left">
@@ -237,9 +277,54 @@ const Navbar: React.FC<NavbarProps> = ({
           </button>
         )}
 
-        <button className="nav-btn has-notification">
-          <FaBell />
-        </button>
+        <div className="notification-menu" ref={notifRef}>
+          <button
+            className={`nav-btn ${unreadCount > 0 ? "has-notification" : ""}`}
+            onClick={toggleNotificationDropdown}
+          >
+            <FaBell />
+            {unreadCount > 0 && <span className="notification-badge">{unreadCount > 9 ? "9+" : unreadCount}</span>}
+          </button>
+
+          {showNotifDropdown && (
+            <div className="notification-dropdown">
+              <div className="notification-header">
+                <span>Notifications</span>
+                {unreadCount > 0 && (
+                  <button
+                    className="mark-all-btn"
+                    onClick={handleMarkAllNotificationsAsRead}
+                  >
+                    Mark all
+                  </button>
+                )}
+              </div>
+
+              {isLoading ? (
+                <div className="notification-state">Loading notifications...</div>
+              ) : isError ? (
+                <div className="notification-state">{message || "Failed to load notifications"}</div>
+              ) : notifications.length === 0 ? (
+                <div className="notification-state">No notifications</div>
+              ) : (
+                <div className="notification-list">
+                  {notifications.map((notif) => (
+                    <button
+                      key={notif.id}
+                      className={`notification-item ${notif.is_read ? "" : "unread"}`}
+                      onClick={() => handleNotificationClick(notif.id)}
+                    >
+                      <div className="notification-message">{notif.message}</div>
+                      <div className="notification-date">
+                        {new Date(notif.created_at).toLocaleString()}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
 
         <div className="user-menu" ref={dropdownRef}>
           <button

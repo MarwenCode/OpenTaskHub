@@ -85,6 +85,20 @@ export const createTask = async (req, res) => {
       ]
     );
 
+    // Auto-create notification when a task is assigned on creation
+    if (assignedTo) {
+      await db.query(
+        `INSERT INTO notifications (user_id, type, message, task_id, workspace_id, is_read, created_at)
+         VALUES ($1, 'task_assigned', $2, $3, $4, false, NOW())`,
+        [
+          assignedTo,
+          `You have been assigned to task "${result.rows[0].title}".`,
+          result.rows[0].id,
+          result.rows[0].workspace_id,
+        ]
+      );
+    }
+
     res.status(201).json({
       message: 'Task created successfully',
       task: result.rows[0],
@@ -106,9 +120,24 @@ export const createTask = async (req, res) => {
  * Update task
  */
 export const updateTask = async (req, res) => {
+  const client = await db.connect();
   try {
     const { id } = req.params;
     const { title, description, status, assignedTo } = req.body;
+
+    await client.query('BEGIN');
+
+    const currentTaskResult = await client.query(
+      'SELECT id, title, workspace_id, assigned_to FROM tasks WHERE id = $1 FOR UPDATE',
+      [id]
+    );
+
+    if (currentTaskResult.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Task not found' });
+    }
+
+    const currentTask = currentTaskResult.rows[0];
 
     const fields = [];
     const values = [];
@@ -133,19 +162,40 @@ export const updateTask = async (req, res) => {
       RETURNING *
     `;
 
-    const result = await db.query(query, values);
+    const result = await client.query(query, values);
+    const updatedTask = result.rows[0];
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Task not found' });
+    const assigneeChanged =
+      assignedTo !== undefined &&
+      assignedTo !== null &&
+      assignedTo !== '' &&
+      String(assignedTo) !== String(currentTask.assigned_to);
+
+    if (assigneeChanged) {
+      await client.query(
+        `INSERT INTO notifications (user_id, type, message, task_id, workspace_id, is_read, created_at)
+         VALUES ($1, 'task_assigned', $2, $3, $4, false, NOW())`,
+        [
+          assignedTo,
+          `You have been assigned to task "${updatedTask.title}".`,
+          updatedTask.id,
+          updatedTask.workspace_id,
+        ]
+      );
     }
+
+    await client.query('COMMIT');
 
     res.status(200).json({
       message: 'Task updated successfully',
-      task: result.rows[0],
+      task: updatedTask,
     });
   } catch (error) {
+    await client.query('ROLLBACK');
     console.error('Update task error:', error);
     res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    client.release();
   }
 };
 

@@ -4,6 +4,7 @@ import authRoutes from './routes/auth.routes.js';
 import taskRoutes from './routes/task.routes.js';
 import workspaceRoutes from './routes/workspace.routes.js';
 import userRoutes from './routes/user.routes.js';
+import notificationRoutes from './routes/notification.routes.js';
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/workspaces', workspaceRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Health check pour Render (permet de savoir si le serveur est réveillé)
 app.get('/api/health', (req, res) => {
