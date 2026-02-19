@@ -195,11 +195,24 @@ const Navbar: React.FC<NavbarProps> = ({
 
   // Notification handlers
   const handleNotificationClick = (notificationId: string) => {
-    dispatch(markNotificationAsRead(notificationId));
-    // Optionally navigate based on notification type
+    dispatch(markNotificationAsRead(notificationId))
+      .unwrap()
+      .then(() => {
+        dispatch(fetchNotifications());
+      })
+      .catch(() => {
+        // Keep UI stable; error is already stored in slice state.
+      });
   };
   const handleMarkAllNotificationsAsRead = () => {
-    dispatch(markAllNotificationsAsRead());
+    dispatch(markAllNotificationsAsRead())
+      .unwrap()
+      .then(() => {
+        dispatch(fetchNotifications());
+      })
+      .catch(() => {
+        // Keep UI stable; error is already stored in slice state.
+      });
   };
 
   const toggleNotificationDropdown = () => {
@@ -312,7 +325,11 @@ const Navbar: React.FC<NavbarProps> = ({
                     <button
                       key={notif.id}
                       className={`notification-item ${notif.is_read ? "" : "unread"}`}
-                      onClick={() => handleNotificationClick(notif.id)}
+                      onClick={() => {
+                        if (!notif.is_read) {
+                          handleNotificationClick(notif.id);
+                        }
+                      }}
                     >
                       <div className="notification-message">{notif.message}</div>
                       <div className="notification-date">
