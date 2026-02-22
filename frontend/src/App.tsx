@@ -79,6 +79,7 @@ function App() {
                 user ? (
                   <Dashboard
                     showWorkspaceForm={showWorkspaceForm}
+                    onOpenWorkspaceForm={() => setShowWorkspaceForm(true)}
                     onCloseWorkspaceForm={() => setShowWorkspaceForm(false)}
                   />
                 ) : (

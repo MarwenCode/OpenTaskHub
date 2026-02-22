@@ -9,21 +9,42 @@ import WorkSpaceForm from "../../components/workspaceForm/WorkSpaceForm";
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1553877522-43269d4ea984";
 
 interface DashboardProps {
+  showWorkspaceForm?: boolean;
+  onOpenWorkspaceForm?: () => void;
+  onCloseWorkspaceForm?: () => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = () => {
+const Dashboard: React.FC<DashboardProps> = ({
+  showWorkspaceForm,
+  onOpenWorkspaceForm,
+  onCloseWorkspaceForm,
+}) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const user = useAppSelector((state: any) => state.auth.user.user);
   const { workspaces, isLoading } = useAppSelector((state) => state.workspace);
-  const [showWorkspaceForm, setShowWorkspaceForm] = useState(false);
+  const [localShowWorkspaceForm, setLocalShowWorkspaceForm] = useState(false);
 
   useEffect(() => {
     dispatch(fetchWorkspaces());
   }, [dispatch]);
 
+  const isWorkspaceFormOpen = showWorkspaceForm ?? localShowWorkspaceForm;
+
+  const handleOpenForm = () => {
+    if (onOpenWorkspaceForm) {
+      onOpenWorkspaceForm();
+      return;
+    }
+    setLocalShowWorkspaceForm(true);
+  };
+
   const handleCloseForm = () => {
-    setShowWorkspaceForm(false);
+    if (onCloseWorkspaceForm) {
+      onCloseWorkspaceForm();
+      return;
+    }
+    setLocalShowWorkspaceForm(false);
   };
 
   return (
@@ -97,7 +118,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
           {user?.role === "admin" && (
             <div
               className="project-card add-card"
-              onClick={() => setShowWorkspaceForm(true)}
+              onClick={handleOpenForm}
             >
               <div className="add-content">
                 <div className="plus-circle">
@@ -111,7 +132,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
         </div>
       )}
 
-      {showWorkspaceForm && (
+      {isWorkspaceFormOpen && (
         <WorkSpaceForm onClose={handleCloseForm} />
       )}
     </div>
