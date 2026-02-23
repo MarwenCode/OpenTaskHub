@@ -1,80 +1,56 @@
-// App.tsx
 import React, { useState } from "react";
 import "./App.css";
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { useAppSelector } from "./redux/store";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import Navbar from "./components/navbar/Navbar";
 import SideBar from "./components/sidebar/SideBar";
 import TaskList from "./components/tasks/TaskList";
-import Dashboard from "./pages/dashboard/Dashboard";
-import SingleWorkspace from "./pages/singleworkspace/SingleWorkSpace";
 import MyTasks from "./pages/mytasks/MyTasks";
+import Dashboard from "./pages/dashboard/Dashboard";
+import Landing from "./pages/landing/Landing";
+import SingleWorkspace from "./pages/singleworkspace/SingleWorkSpace";
+import { useAppSelector } from "./redux/store";
 
 function App() {
-  // On s'assure que state.auth existe avant de déstructurer user
   const { user } = useAppSelector((state) => state.auth || { user: null });
   const location = useLocation();
 
-  // État pour contrôler l'affichage des modals
   const [showWorkspaceForm, setShowWorkspaceForm] = useState(false);
   const [showTicketForm, setShowTicketForm] = useState(false);
 
-  // Routes qui ne doivent pas afficher la sidebar et navbar
-  const noLayoutRoutes = [
-    "/login",
-    "/register",
-    "/admin/login",
-    "/admin/register",
-  ];
-  const shouldShowLayout = user && !noLayoutRoutes.includes(location.pathname);
-
-  // Handlers pour les boutons du Navbar
-  const handleNewProjectClick = () => {
-    setShowWorkspaceForm(true);
-  };
-
-  const handleNewTicketClick = () => {
-    setShowTicketForm(true);
-  };
+  const noLayoutRoutes = ["/", "/login", "/register", "/admin/login", "/admin/register"];
+  const shouldShowLayout = Boolean(user) && !noLayoutRoutes.includes(location.pathname);
 
   return (
     <div className="app-container">
       {shouldShowLayout && (
         <Navbar
-          onNewProjectClick={handleNewProjectClick}
-          onNewTicketClick={handleNewTicketClick}
+          onNewProjectClick={() => setShowWorkspaceForm(true)}
+          onNewTicketClick={() => setShowTicketForm(true)}
         />
       )}
 
       <div className="app-body">
         {shouldShowLayout && <SideBar />}
 
-        <div
-          className={`main-content ${shouldShowLayout ? "with-layout" : ""}`}>
+        <div className={`main-content ${shouldShowLayout ? "with-layout" : ""}`}>
           <Routes>
-            {/* Routes Publiques : accessibles seulement si NON connecté */}
-            <Route
-              path="/login"
-              element={!user ? <Login /> : <Navigate to="/" />}
-            />
+            <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Landing />} />
+
+            <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
             <Route
               path="/register"
-              element={!user ? <Register /> : <Navigate to="/" />}
+              element={!user ? <Register /> : <Navigate to="/dashboard" />}
             />
-            <Route
-              path="/admin/login"
-              element={!user ? <Login /> : <Navigate to="/" />}
-            />
+            <Route path="/admin/login" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
             <Route
               path="/admin/register"
-              element={!user ? <Register /> : <Navigate to="/" />}
+              element={!user ? <Register /> : <Navigate to="/dashboard" />}
             />
 
-            {/* Routes Protégées : redirigent vers /login si user est null */}
             <Route
-              path="/"
+              path="/dashboard"
               element={
                 user ? (
                   <Dashboard
@@ -83,7 +59,7 @@ function App() {
                     onCloseWorkspaceForm={() => setShowWorkspaceForm(false)}
                   />
                 ) : (
-                  <Navigate to="/login" />
+                  <Navigate to="/" />
                 )
               }
             />
@@ -97,23 +73,18 @@ function App() {
                     onCloseTicketForm={() => setShowTicketForm(false)}
                   />
                 ) : (
-                  <Navigate to="/login" />
+                  <Navigate to="/" />
                 )
               }
             />
 
-            <Route
-              path="/my-tasks"
-              element={user ? <MyTasks /> : <Navigate to="/login" />}
-            />
-
+            <Route path="/my-tasks" element={user ? <MyTasks /> : <Navigate to="/" />} />
             <Route
               path="/workspaces/:id/tasks"
-              element={user ? <TaskList /> : <Navigate to="/login" />}
+              element={user ? <TaskList /> : <Navigate to="/" />}
             />
 
-            {/* Redirection automatique pour toute autre URL */}
-            <Route path="*" element={<Navigate to={user ? "/" : "/login"} />} />
+            <Route path="*" element={<Navigate to={user ? "/dashboard" : "/"} />} />
           </Routes>
         </div>
       </div>

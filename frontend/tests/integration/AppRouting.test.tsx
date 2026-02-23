@@ -1,12 +1,9 @@
-// Test framework: Jest + React Testing Library
-// Scope: Integration test frontend (App + Router + Store)
 import { configureStore } from "@reduxjs/toolkit";
 import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import App from "../../src/App";
 
-// On mock les gros composants/pages pour tester seulement la logique de routing
 jest.mock("../../src/components/auth/Login", () => ({
   __esModule: true,
   default: () => <div>Login Page Mock</div>,
@@ -15,6 +12,11 @@ jest.mock("../../src/components/auth/Login", () => ({
 jest.mock("../../src/components/auth/Register", () => ({
   __esModule: true,
   default: () => <div>Register Page Mock</div>,
+}));
+
+jest.mock("../../src/pages/landing/Landing", () => ({
+  __esModule: true,
+  default: () => <div>Landing Page Mock</div>,
 }));
 
 jest.mock("../../src/components/navbar/Navbar", () => ({
@@ -64,10 +66,9 @@ const createTestStore = (user: unknown) =>
   });
 
 describe("App routing integration", () => {
-  it("redirects unauthenticated user from / to /login", () => {
+  it("shows landing on / when user is unauthenticated", () => {
     const store = createTestStore(null);
 
-    // On démarre la navigation sur "/" sans utilisateur authentifié
     render(
       <Provider store={store}>
         <MemoryRouter initialEntries={["/"]}>
@@ -76,16 +77,15 @@ describe("App routing integration", () => {
       </Provider>
     );
 
-    expect(screen.getByText("Login Page Mock")).toBeInTheDocument();
+    expect(screen.getByText("Landing Page Mock")).toBeInTheDocument();
   });
 
-  it("shows dashboard on / when user is authenticated", () => {
+  it("shows dashboard on /dashboard when user is authenticated", () => {
     const store = createTestStore({ id: "u-1", token: "token-1" });
 
-    // Même route "/", mais avec user connecté dans le store
     render(
       <Provider store={store}>
-        <MemoryRouter initialEntries={["/"]}>
+        <MemoryRouter initialEntries={["/dashboard"]}>
           <App />
         </MemoryRouter>
       </Provider>
