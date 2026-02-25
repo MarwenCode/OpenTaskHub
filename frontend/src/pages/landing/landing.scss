@@ -1,14 +1,15 @@
+@use "../../styles/variables" as *;
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap");
+
 
 .landing-page {
   min-height: 100vh;
   font-family: "Manrope", "Segoe UI", sans-serif;
-  color: #12263a;
+  color: $text-color;
   background:
-    radial-gradient(circle at 10% 10%, rgba(67, 97, 238, 0.2), transparent 35%),
-    radial-gradient(circle at 90% 0%, rgba(244, 162, 97, 0.2), transparent 30%),
-    linear-gradient(180deg, #f5f8ff 0%, #ffffff 40%, #f7fbff 100%)
-    ;
+    radial-gradient(circle at 10% 10%, rgba($primary, 0.16), transparent 35%),
+    radial-gradient(circle at 90% 0%, rgba($primary-400, 0.12), transparent 30%),
+    linear-gradient(180deg, #f8faff 0%, #ffffff 42%, #f6f9ff 100%);
 }
 
 .landing-hero,
@@ -37,7 +38,7 @@
   left: -6rem;
   width: 14rem;
   height: 14rem;
-  background: rgba(85, 181, 157, 0.25);
+  background: rgba($primary, 0.16);
 }
 
 .hero-bg-shape-two {
@@ -45,7 +46,7 @@
   top: 8rem;
   width: 12rem;
   height: 12rem;
-  background: rgba(67, 97, 238, 0.18);
+  background: rgba($primary-400, 0.18);
 }
 
 .landing-topbar {
@@ -68,7 +69,7 @@
   width: 0.9rem;
   height: 0.9rem;
   border-radius: 50%;
-  background: linear-gradient(145deg, #4361ee 0%, #2a9d8f 100%);
+  background: linear-gradient(145deg, $primary 0%, $primary-400 100%);
 }
 
 .brand-name {
@@ -88,17 +89,18 @@
   text-decoration: none;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #1d3557;
+  color: $text-color;
 }
 
 .topbar-register {
   padding: 0.65rem 1rem;
   border-radius: 999px;
-  background: #1d3557;
+  background: $primary;
   color: #ffffff !important;
+  box-shadow: 0 10px 20px rgba($primary, 0.2);
 }
 
-.hero-content {
+.landing-page .hero-content {
   position: relative;
   z-index: 1;
   display: grid;
@@ -112,14 +114,14 @@
   font-family: "Space Grotesk", "Segoe UI", sans-serif;
   font-size: clamp(2rem, 4.2vw, 3.4rem);
   line-height: 1.08;
-  color: #0b1f35;
+  color: $text-color;
 }
 
 .hero-copy p {
   max-width: 64ch;
   font-size: 1.05rem;
   line-height: 1.65;
-  color: #2d4a66;
+  color: $muted;
 }
 
 .hero-badge {
@@ -128,8 +130,8 @@
   gap: 0.55rem;
   padding: 0.45rem 0.85rem;
   border-radius: 999px;
-  background: rgba(12, 41, 73, 0.08);
-  color: #0c2949;
+  background: rgba($primary, 0.1);
+  color: $primary;
   font-size: 0.88rem;
   font-weight: 700;
 }
@@ -155,15 +157,15 @@
 }
 
 .primary-cta {
-  background: linear-gradient(135deg, #1d3557 0%, #4361ee 100%);
+  background: linear-gradient(135deg, $primary-600 0%, $primary 100%);
   color: #ffffff;
-  box-shadow: 0 10px 20px rgba(29, 53, 87, 0.2);
+  box-shadow: 0 10px 20px rgba($primary, 0.24);
 }
 
 .secondary-cta {
-  border: 1px solid rgba(29, 53, 87, 0.22);
-  color: #1d3557;
-  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba($primary, 0.22);
+  color: $primary;
+  background: rgba(255, 255, 255, 0.88);
 }
 
 .primary-cta:hover,
@@ -175,7 +177,7 @@
   list-style: none;
   display: grid;
   gap: 0.55rem;
-  color: #21425e;
+  color: $text-color;
 }
 
 .hero-highlights li {
@@ -185,11 +187,11 @@
 }
 
 .hero-panel {
-  background: linear-gradient(180deg, #ffffff 0%, #eef4ff 100%);
-  border: 1px solid rgba(29, 53, 87, 0.1);
+  background: linear-gradient(180deg, #ffffff 0%, #eef3ff 100%);
+  border: 1px solid rgba($primary, 0.12);
   border-radius: 1rem;
   padding: 1.1rem;
-  box-shadow: 0 14px 32px rgba(29, 53, 87, 0.08);
+  box-shadow: 0 14px 32px rgba($primary, 0.1);
 }
 
 .hero-panel h2 {
@@ -210,16 +212,16 @@
   gap: 0.5rem;
   padding: 0.7rem;
   border-radius: 0.65rem;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.94);
 }
 
 .panel-item span {
-  color: #2d4a66;
+  color: $muted;
   font-size: 0.9rem;
 }
 
 .panel-item strong {
-  color: #12263a;
+  color: $text-color;
   font-size: 0.85rem;
 }
 
@@ -232,7 +234,7 @@
 
 .panel-stats article {
   border-radius: 0.6rem;
-  background: #0c2949;
+  background: linear-gradient(135deg, $primary-600 0%, $primary 100%);
   color: #ffffff;
   padding: 0.7rem;
   display: grid;
@@ -248,20 +250,20 @@
   opacity: 0.88;
 }
 
-.section-heading {
+.landing-page .section-heading {
   text-align: center;
   margin-bottom: 1.4rem;
 }
 
-.section-heading span {
+.landing-page .section-heading span {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 0.75rem;
-  color: #4361ee;
+  color: $primary;
   font-weight: 700;
 }
 
-.section-heading h2 {
+.landing-page .section-heading h2 {
   margin-top: 0.5rem;
   font-family: "Space Grotesk", "Segoe UI", sans-serif;
   font-size: clamp(1.45rem, 3vw, 2.2rem);
@@ -281,8 +283,8 @@
   border-radius: 1rem;
   padding: 1.1rem;
   background: #ffffff;
-  border: 1px solid rgba(12, 41, 73, 0.08);
-  box-shadow: 0 10px 26px rgba(18, 38, 58, 0.06);
+  border: 1px solid rgba($primary, 0.1);
+  box-shadow: 0 10px 26px rgba($primary, 0.08);
 }
 
 .feature-icon {
@@ -292,8 +294,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(67, 97, 238, 0.14);
-  color: #1d3557;
+  background: rgba($primary, 0.12);
+  color: $primary;
   margin-bottom: 0.7rem;
 }
 
@@ -304,7 +306,7 @@
 }
 
 .feature-card p {
-  color: #365675;
+  color: $muted;
   line-height: 1.55;
 }
 
@@ -320,8 +322,8 @@
 
 .step-card {
   border-radius: 1rem;
-  background: linear-gradient(180deg, #ffffff 0%, #f5f9ff 100%);
-  border: 1px solid rgba(12, 41, 73, 0.08);
+  background: linear-gradient(180deg, #ffffff 0%, #f5f8ff 100%);
+  border: 1px solid rgba($primary, 0.1);
   padding: 1rem;
 }
 
@@ -331,7 +333,7 @@
   font-family: "Space Grotesk", "Segoe UI", sans-serif;
   font-size: 1.2rem;
   font-weight: 700;
-  color: #4361ee;
+  color: $primary;
 }
 
 .step-card h3 {
@@ -340,7 +342,7 @@
 }
 
 .step-card p {
-  color: #365675;
+  color: $muted;
   line-height: 1.55;
 }
 
@@ -348,7 +350,7 @@
   margin: 1rem auto 2rem;
   padding: 1.7rem;
   border-radius: 1rem;
-  background: #0c2949;
+  background: linear-gradient(135deg, $primary-600 0%, $primary 100%);
   color: #ffffff;
   text-align: center;
 }
@@ -377,7 +379,7 @@
 .landing-final-cta p {
   margin: 0.7rem auto 1.3rem;
   max-width: 70ch;
-  color: #365675;
+  color: $muted;
 }
 
 .final-cta-actions {
