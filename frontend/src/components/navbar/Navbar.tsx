@@ -15,6 +15,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { logout, reset } from "../../redux/authSlice/authSlice";
 import { fetchNotifications, markAllNotificationsAsRead, markNotificationAsRead } from "../../redux/notificationSlice/notificationSlice";
+import brandLogo from "../../assets/opentaskhub-logo.svg";
 import "./navbar.scss";
 
 interface NavbarProps {
@@ -229,12 +230,7 @@ const Navbar: React.FC<NavbarProps> = ({
       <div className="navbar-left">
         <div className="navbar-logo">
           <div className="logo-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z"
-                fill="currentColor"
-              />
-            </svg>
+            <img src={brandLogo} alt="OpenTaskHub logo" />
           </div>
           <span className="logo-text">OpenTaskHub</span>
         </div>

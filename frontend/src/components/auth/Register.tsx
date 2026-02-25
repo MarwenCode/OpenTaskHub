@@ -16,8 +16,8 @@ import Loader from '../loader/Loader';
 
 // Assets & Styles
 import './login.scss';
-import loginLogo from '../../assets/logo.png';
-import dashboardImg from '../../assets/logo.png'; 
+import loginLogo from '../../assets/opentaskhub-logo.svg';
+import dashboardImg from '../../assets/opentaskhub-logo.svg'; 
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState('');

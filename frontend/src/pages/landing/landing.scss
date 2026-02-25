@@ -65,11 +65,10 @@
   gap: 0.6rem;
 }
 
-.brand-dot {
-  width: 0.9rem;
-  height: 0.9rem;
-  border-radius: 50%;
-  background: linear-gradient(145deg, $primary 0%, $primary-400 100%);
+.brand-logo {
+  width: 34px;
+  height: 34px;
+  display: block;
 }
 
 .brand-name {

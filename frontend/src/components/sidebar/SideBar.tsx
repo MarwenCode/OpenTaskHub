@@ -1,8 +1,9 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { FaHome, FaBell, FaCog, FaCalendar, FaUsers } from "react-icons/fa";
+import { FaHome, FaBell, FaCog, FaCalendar } from "react-icons/fa";
 import "./sidebar.scss";
 import { useAppSelector } from "../../redux/store";
+import brandLogo from "../../assets/opentaskhub-logo.svg";
 
 const SideBar: React.FC = () => {
   const navigate = useNavigate();
@@ -28,12 +29,7 @@ const SideBar: React.FC = () => {
       <div className="sidebar-header">
         <div className="logo-container">
           <div className="logo-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z"
-                fill="currentColor"
-              />
-            </svg>
+            <img src={brandLogo} alt="OpenTaskHub logo" />
           </div>
           <span className="logo-text">OpenTaskHub</span>
         </div>

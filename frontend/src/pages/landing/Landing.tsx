@@ -10,6 +10,7 @@ import {
   FaUsers,
 } from "react-icons/fa";
 import "./landing.scss";
+import brandLogo from "../../assets/opentaskhub-logo.svg";
 
 const Landing: React.FC = () => {
   const features = [
@@ -71,7 +72,7 @@ const Landing: React.FC = () => {
 
         <header className="landing-topbar">
           <div className="brand-block">
-            <span className="brand-dot" />
+            <img src={brandLogo} alt="OpenTaskHub logo" className="brand-logo" />
             <span className="brand-name">OpenTaskHub</span>
           </div>
           <nav className="topbar-links">
