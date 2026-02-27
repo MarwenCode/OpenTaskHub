@@ -1,11 +1,17 @@
 # Frontend Tests
 
-## Librairies utilisees
-- Unit et integration: Jest + React Testing Library
-- E2E navigateur: Playwright
+## Outils
+- `Jest` + `React Testing Library` pour unitaires et integration.
+- `Playwright` pour les scenarios end-to-end dans un vrai navigateur.
 
 ## Arborescence
-- `tests/unit`: tests unitaires frontend
-- `tests/integration`: tests d'integration frontend (Router/Store/API mockee)
-- `tests/e2e`: tests end-to-end navigateur
-- `tests/setup`: setup Jest (matchers, mocks utilitaires)
+- `tests/unit`: composants/fonctions utilitaires isoles.
+- `tests/integration`: routing + store + comportement d'ecran.
+- `tests/e2e`: parcours utilisateur complet (login, creation, suppression).
+- `tests/setup`: initialisation Jest (`jest-dom`, mocks globaux).
+
+## Commandes utiles
+- `npm run test:unit`: lance les tests unitaires frontend.
+- `npm run test:integration`: lance les tests d'integration frontend.
+- `npm run e2e`: lance les tests Playwright.
+- `npm test`: lance unitaires puis integration.

@@ -1,5 +1,6 @@
 import { db } from '../config/db.js';
 import { TaskModel } from '../models/task.model.js';
+import { validateTaskInput } from '../utils/validators.js';
 
 /**
  * Get all tasks in a workspace
@@ -64,9 +65,15 @@ export const createTask = async (req, res) => {
     const { title, description, status, workspaceId, assignedTo } = req.body;
     const userId = req.userId; // from JWT middleware
 
-    if (!title || !workspaceId) {
+    const validationError = validateTaskInput({
+      title,
+      workspaceId,
+      status,
+    });
+
+    if (validationError) {
       return res.status(400).json({
-        error: 'Title and workspaceId are required',
+        error: validationError,
       });
     }
 

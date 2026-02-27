@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { db } from '../config/db.js';
 import dotenv from 'dotenv';
+import { validateLoginInput, validateRegisterInput } from '../utils/validators.js';
 dotenv.config();
 
 // --- FONCTION REGISTER ---
@@ -9,6 +10,11 @@ export const register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
     const role = req.roleToAssign; // 'user' ou 'admin' selon l'URL appelée
+
+    const validationError = validateRegisterInput({ username, email, password });
+    if (validationError) {
+      return res.status(400).json({ error: validationError });
+    }
 
     // Hachage et insertion en base
     const hashed = await bcrypt.hash(password, 10);
@@ -29,6 +35,11 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const expectedRole = req.expectedRole; // 'user' ou 'admin' selon l'URL appelée
+
+    const validationError = validateLoginInput({ email, password });
+    if (validationError) {
+      return res.status(400).json({ error: validationError });
+    }
 
     const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
     if (result.rows.length === 0) return res.status(401).json({ error: 'Invalide' });

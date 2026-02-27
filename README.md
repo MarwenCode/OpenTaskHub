@@ -224,7 +224,7 @@ Important: les slices Redux utilisent `VITE_API_URL` directement.
 - `backend/database.sql` et certaines insertions controller utilisent des noms differents (`owner_id` / `created_by`) a aligner.
 - `backend/API_ENDPOINTS_LIST.md` n'est plus totalement aligne avec les routes `/api/...` actuelles.
 - Le Dockerfile backend est vide: une image applicative complete peut etre ajoutee.
-- Ajouter des tests automatises (unitaires + integration API) renforcerait la robustesse.
+- Une strategie de tests complete est disponible (unitaires, integration, E2E) avec CI GitHub Actions.
 
 ## 11) Scripts utiles
 
@@ -232,6 +232,9 @@ Important: les slices Redux utilisent `VITE_API_URL` directement.
 
 - `npm run dev`: demarrage en mode developpement (nodemon)
 - `npm start`: demarrage production
+- `npm run test:unit`: tests unitaires backend
+- `npm run test:integration`: tests d'integration backend
+- `npm run test:db:setup`: initialisation schema de test PostgreSQL
 
 ### Frontend
 
@@ -239,6 +242,9 @@ Important: les slices Redux utilisent `VITE_API_URL` directement.
 - `npm run build`: build production
 - `npm run preview`: preview du build
 - `npm run lint`: verification ESLint
+- `npm run test:unit`: tests unitaires frontend
+- `npm run test:integration`: tests d'integration frontend
+- `npm run e2e`: tests E2E Playwright
 
 ## 12) Ce que je voulais demontrer avec ce projet
 
@@ -246,6 +252,11 @@ Important: les slices Redux utilisent `VITE_API_URL` directement.
 - Manipuler des roles et permissions dans une API REST
 - Construire une UI de suivi des taches orientee usage quotidien
 - Faire coexister environnement local et deploiement cloud (CORS + `DATABASE_URL`)
+
+## 13) Guide tests + CI/CD
+
+- Guide complet: `TESTING.md`
+- Workflow CI: `.github/workflows/ci.yml`
 
 ---
 
